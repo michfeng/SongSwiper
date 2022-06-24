@@ -102,11 +102,15 @@ public class LoginActivity extends AppCompatActivity {
 
             Log.d("STARTING", "Retrieved user information");
             editor.commit();
-            startMainActivity();
+            startMainActivity(user.id);
         });
     }
 
-    private void startMainActivity() {
+    private void startMainActivity(String id) {
+        // checks Parse server if user exists
+
+
+
         // goes to SwipeActivity once authentication is done
         Intent i = new Intent(LoginActivity.this,MainActivity.class);
         startActivity(i);
