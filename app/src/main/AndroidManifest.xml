@@ -20,25 +20,25 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".activities.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".LikedActivity"
+            android:name=".activities.LikedActivity"
             android:exported="false" />
         <activity
-            android:name=".PostDetailsActivity"
+            android:name=".activities.PostDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".CardDetailsActivity"
+            android:name=".activities.CardDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".SwipeActivity"
+            android:name=".activities.SwipeActivity"
             android:exported="false" />
         <activity
-            android:name=".FeedActivity"
+            android:name=".activities.FeedActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
         </activity>
     </application>

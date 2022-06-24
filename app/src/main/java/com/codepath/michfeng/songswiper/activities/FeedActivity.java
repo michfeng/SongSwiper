@@ -1,14 +1,16 @@
-package com.codepath.michfeng.songswiper;
+package com.codepath.michfeng.songswiper.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class CardDetailsActivity extends AppCompatActivity {
+import com.codepath.michfeng.songswiper.R;
+
+public class FeedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_card_details);
+        setContentView(R.layout.activity_feed);
     }
 }

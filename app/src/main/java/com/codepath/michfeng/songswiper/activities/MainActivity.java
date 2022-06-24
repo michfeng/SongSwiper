@@ -1,8 +1,10 @@
-package com.codepath.michfeng.songswiper;
+package com.codepath.michfeng.songswiper.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.codepath.michfeng.songswiper.R;
 
 public class MainActivity extends AppCompatActivity {
 

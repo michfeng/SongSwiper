@@ -1,19 +1,23 @@
-package com.codepath.michfeng.songswiper;
+package com.codepath.michfeng.songswiper.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.connectors.UserService;
+import com.codepath.michfeng.songswiper.models.SpotifyUser;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
-
-import java.net.Authenticator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
             "app-remote-control,user-top-read,user-library-modify,user-follow-read, user-read-private";
     //  may need to adjust scopes ^ ***
 
+    private Button btnAuthenticate;
+
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
 
@@ -33,11 +39,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
 
-        authenticateSpotify();
+        btnAuthenticate = (Button) findViewById(R.id.btnAuthenticate);
+        btnAuthenticate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                authenticateSpotify();
+            }
+        });
 
         // initialize shared preferences
         msharedPreferences = this.getSharedPreferences("SPOTIFY",0);
@@ -80,5 +92,24 @@ public class LoginActivity extends AppCompatActivity {
         // send request
         AuthorizationRequest request = builder.build();
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
+    }
+
+    private void waitForUserInfo() {
+        UserService userService = new UserService(queue, msharedPreferences);
+        userService.get( () -> {
+            SpotifyUser user = userService.getUser();
+            editor = getSharedPreferences("SPOTIFY",0).edit();
+            editor.putString("userid",user.id);
+
+            Log.d("STARTING", "Retrieved user information");
+            editor.commit();
+            startMainActivity();
+        });
+    }
+
+    private void startMainActivity() {
+        // goes to SwipeActivity once authentication is done
+        Intent i = new Intent(LoginActivity.this,SwipeActivity.class);
+        startActivity(i);
     }
 }
