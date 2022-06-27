@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -121,9 +122,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startMainActivity(String id) {
-        // Checks Parse server if user is not in system
-        //if (ParseUser.)
-        /*try {
+        // Attempts to sign user up based on Spotify user id.
+        // If user already exists in database, the method will throw an exception
+        try {
             Log.i(TAG, "Attempting to sign up user " + id);
 
             ParseUser newUser = new ParseUser();
@@ -131,28 +132,31 @@ public class LoginActivity extends AppCompatActivity {
             newUser.setPassword("password");
 
             newUser.signUp();
+            logInUser(id);
         } catch (ParseException e) {
-            if (e == ParseException.USERNAME_TAKEN)
+        // Signing up threw an exception, so they may already exist in database, so we try logging in.
+            logInUser(id);
         }
-        try {
-            ParseUser.s
-            ParseUser.sign(id,"password", new LogInCallback() {
-                @Override
-                public void done(ParseUser user, ParseException e) {
-                    if (e == Does)
-                }
-            });
-        }
-            // sign user up
-
-        // log in user
-*/
-
 
         // Goes to SwipeActivity once authentication is done.
         Intent i = new Intent(LoginActivity.this,MainActivity.class);
         startActivity(i);
     }
+
+    private void logInUser(String id) {
+        Log.i(TAG, "Attempting to log in user " + id);
+        ParseUser.logInInBackground(id, "password", new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with login", e);
+                    Toast.makeText(LoginActivity.this, "Invalid login", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
+    }
+
 
     private void signUp(String id) {
         Log.i(TAG, "Attempting to sign up user " + id);
