@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG = "LoginActivity";
     private static final String CLIENT_ID = "7d2e57d7cf85444da0db0412f4116c80";
-    private static final String REDIRECT_URI = "com.codepath.michfeng.songswiper://callback/";
+    private static final String REDIRECT_URI = "com.codepath.michfeng.songswiper://callback";
     private static final int REQUEST_CODE = 1337;
     private static final String SCOPES = "user-read-recently-played,playlist-read-private,user-modify-playback-state,app-remote-control,user-top-read,user-library-modify,user-follow-read,user-read-private";
     //  may need to adjust scopes ^ ***
@@ -104,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
         //AuthorizationClient.openLoginInBrowser(this, request);
         Log.i(TAG,"openLoginActivity finished");
-        //startMainActivity("0");
     }
 
     private void waitForUserInfo() {
