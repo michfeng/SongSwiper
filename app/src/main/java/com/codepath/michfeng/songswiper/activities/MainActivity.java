@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
-        // defining fragments
+        // Defining Fragments (each represents a tab).
         final Fragment fragmentSwipe = new SwipeFragment();
         final Fragment fragmentFeed = new FeedFragment();
         final Fragment fragmentProfile = new ProfileFragment();
 
-        // handle navigation selection
+        // Handles navigation selection.
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
                     @Override
