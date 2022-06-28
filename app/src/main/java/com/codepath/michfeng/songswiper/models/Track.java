@@ -3,9 +3,9 @@ package com.codepath.michfeng.songswiper.models;
 public class Track {
     private String id;
     private String name;
-    private String artist;
+    private Artist [] artist;
 
-    public Track (String id, String name, String artist) {
+    public Track (String id, String name, Artist [] artist) {
         this.id = id;
         this.name = name;
         this.artist = artist;
@@ -27,11 +27,11 @@ public class Track {
         this.name = name;
     }
 
-    public String getArtist() {
+    public Artist [] getArtist() {
         return artist;
     }
 
-    public void setArtist(String artist) {
+    public void setArtist(Artist [] artist) {
         this.artist = artist;
     }
 }
