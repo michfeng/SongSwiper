@@ -17,9 +17,18 @@ import android.widget.TextView;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.RecommendationService;
 import com.codepath.michfeng.songswiper.connectors.TopTrackService;
+import com.codepath.michfeng.songswiper.models.Artist;
 import com.codepath.michfeng.songswiper.models.Track;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import spotify.api.spotify.SpotifyApi;
+import spotify.models.artists.ArtistFull;
+import spotify.models.paging.Paging;
+import spotify.models.recommendations.RecommendationCollection;
+import spotify.models.tracks.TrackFull;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,8 +41,10 @@ public class SwipeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private ArrayList<Track> recommendations;
+    private RecommendationCollection recommendations;
     private RecommendationService recommendationService;
+
+    private static final String TAG = "SwipeFragment";
 
     TextView tv;
 
@@ -49,16 +60,14 @@ public class SwipeFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param access_token Parameter 1.
      * @return A new instance of fragment SwipeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SwipeFragment newInstance(String param1, String param2) {
+    public static SwipeFragment newInstance(String access_token) {
         SwipeFragment fragment = new SwipeFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, access_token);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,11 +79,30 @@ public class SwipeFragment extends Fragment {
         tv = (TextView) view.findViewById(R.id.textView);
 
         recommendationService = new RecommendationService(getApplicationContext());
-        recommendationService.get(() -> {
-            this.recommendations = recommendationService.getRecommendations();
-        });
 
-        // At this point, recommendations is still null. Possibly an issue with scope.
+        String accessToken = getArguments().getString("accessToken");
+        Log.i(TAG,"access token: "+accessToken);
+        /*recommendationService.get(() -> {
+            recommendations = recommendationService.getRecommendations();
+            Log.i("SwipeFragment","recommended tracks: "+recommendations.toString());
+        });*/
+
+
+        SpotifyApi spotifyApi = new SpotifyApi(accessToken);
+
+        List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
+        List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
+        List<String> topGenres = new ArrayList<>();
+        List<String> topTracks = new ArrayList<>();
+        List<String> topArtists = new ArrayList<>();
+
+        for (TrackFull t : topTrackFull) topTracks.add(t.getId());
+        for (ArtistFull a : topArtistFull) {
+            topGenres.addAll(a.getGenres());
+            topArtists.add(a.getId());
+        }
+
+        recommendations = spotifyApi.getRecommendations(topArtists,topGenres,topTracks,new HashMap<String, String>());
         Log.i("SwipeFragment","recommended tracks: "+recommendations.toString());
     }
 

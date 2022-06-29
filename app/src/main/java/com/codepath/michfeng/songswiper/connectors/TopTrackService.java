@@ -7,6 +7,8 @@ import android.util.Log;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.codepath.michfeng.songswiper.models.Track;
@@ -40,6 +42,7 @@ public class TopTrackService {
     // Returns the SpotifyUser's top Tracks.
     public ArrayList<Track> getTopTracks(final VolleyCallBack callBack) {
         String endpoint = "https://api.spotify.com/v1/me/top/tracks";
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,endpoint,null, response -> {
             Gson gson = new Gson();
             JSONArray jsonArray = response.optJSONArray("items");

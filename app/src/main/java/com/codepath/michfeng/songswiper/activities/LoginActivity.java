@@ -23,6 +23,17 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import spotify.api.authorization.AuthorizationCodeFlowPKCE;
+import spotify.api.authorization.AuthorizationRefreshToken;
+import spotify.api.enums.AuthorizationScope;
+import spotify.models.paging.Paging;
+import spotify.models.tracks.TrackFull;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences msharedPreferences;
 
     private RequestQueue queue;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
-                    waitForUserInfo();
+                    waitForUserInfo(response);
                     break;
 
                 // There is an error in log in attempt.
@@ -102,11 +115,14 @@ public class LoginActivity extends AppCompatActivity {
         // Send request.
         AuthorizationRequest request = builder.build();
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
-        //AuthorizationClient.openLoginInBrowser(this, request);
+
         Log.i(TAG,"openLoginActivity finished");
     }
 
-    private void waitForUserInfo() {
+    private void waitForUserInfo(AuthorizationResponse response) {
+
+        String accessToken = response.getAccessToken();
+
         UserService userService = new UserService(queue, msharedPreferences);
         userService.get( () -> {
             SpotifyUser user = userService.getUser();
@@ -115,12 +131,12 @@ public class LoginActivity extends AppCompatActivity {
 
             Log.d("STARTING", "Retrieved user information");
             editor.commit();
-            startMainActivity(user.id);
+            startMainActivity(user.id,accessToken);
         });
 
     }
 
-    private void startMainActivity(String id) {
+    private void startMainActivity(String id, String accessToken) {
         // Attempts to sign user up based on Spotify user id.
         // If user already exists in database, the method will throw an exception
         try {
@@ -139,6 +155,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Goes to SwipeActivity once authentication is done.
         Intent i = new Intent(LoginActivity.this,MainActivity.class);
+        i.putExtra("accessToken",accessToken);
+        Log.i(TAG,"Access token: "+accessToken);
         startActivity(i);
     }
 

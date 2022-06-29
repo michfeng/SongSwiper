@@ -24,6 +24,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RecommendationService {
@@ -57,6 +58,10 @@ public class RecommendationService {
             this.topTracks = getIDs(tracklist);
             this.topArtists = getArtists(tracklist);
             this.topGenres = getGenres(tracklist);
+
+            Log.i(TAG,"tracks: "+ topTracks.toString());
+            Log.i(TAG,"artists: "+ topArtists.toString());
+            Log.i(TAG,"genres: "+ topGenres.toString());
         });
     }
 
@@ -100,7 +105,22 @@ public class RecommendationService {
     // Returns the SpotifyUser's recommendations.
     public ArrayList<Track> get(final VolleyCallBack callBack) {
         String endpoint = "https://api.spotify.com/v1/recommendations";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,endpoint,null, response -> {
+
+        initSeeds();
+
+        // Manipulate seeds to fit Spotify requirements (size 5, String array).
+        String [] seed_artist = topArtists.toArray(new String[topArtists.size()]);
+        String [] seed_genres = topGenres.toArray(new String[topGenres.size()]);
+        String [] seed_tracks = topTracks.toArray(new String[topTracks.size()]);
+
+        Map<String, String []> params = new HashMap();
+        params.put("seed_artists", Arrays.copyOfRange(seed_artist,0,5));
+        params.put("seed_genres",  Arrays.copyOfRange(seed_genres,0,5));
+        params.put("seed_tracks",  Arrays.copyOfRange(seed_tracks,0,5));
+
+        JSONObject parameters = new JSONObject(params);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,endpoint,parameters, response -> {
             Gson gson = new Gson();
             JSONArray jsonArray = response.optJSONArray("items");
 
