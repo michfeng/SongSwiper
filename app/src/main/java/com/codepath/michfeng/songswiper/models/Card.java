@@ -5,12 +5,16 @@ public class Card {
     public String artistName;
     public String coverImagePath;
     public String artistImagePath;
+    public String preview;
 
-    public Card (String track, String artist, String coverIm, String artistIm) {
+    public Card() {}
+
+    public Card (String track, String artist, String coverIm, String artistIm,String preview) {
         this.trackName = track;
         this.artistName = artist;
         this.coverImagePath = coverIm;
         this.artistImagePath = artistIm;
+        this.preview = preview;
     }
 
     public String getArtistImagePath() {
@@ -43,5 +47,13 @@ public class Card {
 
     public void setTrackName(String trackName) {
         this.trackName = trackName;
+    }
+
+    public String getPreview() {
+        return preview;
+    }
+
+    public void setPreview(String preview) {
+        this.preview = preview;
     }
 }
