@@ -90,20 +90,36 @@ public class SwipeFragment extends Fragment {
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
-        List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
-        List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
-        List<String> topGenres = new ArrayList<>();
-        List<String> topTracks = new ArrayList<>();
-        List<String> topArtists = new ArrayList<>();
+        Thread thread = new Thread(new Runnable() {
 
-        for (TrackFull t : topTrackFull) topTracks.add(t.getId());
-        for (ArtistFull a : topArtistFull) {
-            topGenres.addAll(a.getGenres());
-            topArtists.add(a.getId());
-        }
+            @Override
+            public void run() {
+                try  {
+                    List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
+                    List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
 
-        recommendations = spotifyApi.getRecommendations(topArtists,topGenres,topTracks,new HashMap<String, String>());
-        Log.i("SwipeFragment","recommended tracks: "+recommendations.toString());
+                    List<String> topGenres = new ArrayList<>();
+                    List<String> topTracks = new ArrayList<>();
+                    List<String> topArtists = new ArrayList<>();
+
+                    for (TrackFull t : topTrackFull) topTracks.add(t.getId());
+                    for (ArtistFull a : topArtistFull) {
+                        topGenres.addAll(a.getGenres());
+                        topArtists.add(a.getId());
+                    }
+
+                    Log.i(TAG, "topGenres: "+topGenres.toString());
+
+
+                    recommendations = spotifyApi.getRecommendations(topArtists,topGenres,topTracks,new HashMap<String, String>());
+                    Log.i(TAG,"recommended tracks: "+recommendations.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
     }
 
     @Override
