@@ -1,5 +1,6 @@
 package com.codepath.michfeng.songswiper.models;
 
+// Keeps track of specific recommendations in "cards"
 public class Card {
     public String trackName;
     public String artistName;

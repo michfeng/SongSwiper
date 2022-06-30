@@ -53,7 +53,7 @@ public class SwipeFragment extends Fragment {
     private String mParam2;
 
     public SwipeFragment() {
-        // Required empty public constructor
+        // Required empty public constructor.
     }
 
     /**
@@ -112,7 +112,7 @@ public class SwipeFragment extends Fragment {
                     }
 
 
-                    // Making getting specific seeds
+                    // Making lists for specific seeds
                     List<String> seed_artists = (new ArrayList<>());
                     seed_artists.add(topArtists.get(0));
                     seed_artists.add(topArtists.get(1));
@@ -142,22 +142,21 @@ public class SwipeFragment extends Fragment {
 
                     adapter.notifyDataSetChanged();
 
-                    // To get swipe event of viewpager2
+                    // To get swipe event of viewpager2.
                     viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
                         @Override
-                        // This method is triggered when there is any scrolling activity for the current page
+                        // This method is triggered when there is any scrolling activity for the current page.
                         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                             super.onPageScrolled(position, positionOffset, positionOffsetPixels);
                         }
 
-                        // triggered when you select a new page
+                        // Triggered when you select a new page.
                         @Override
                         public void onPageSelected(int position) {
                             super.onPageSelected(position);
                         }
 
-                        // triggered when there is
-                        // scroll state will be changed
+                        // Triggered when scroll state will be changed.
                         @Override
                         public void onPageScrollStateChanged(int state) {
                             super.onPageScrollStateChanged(state);
