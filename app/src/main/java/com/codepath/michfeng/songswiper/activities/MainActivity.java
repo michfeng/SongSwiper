@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         Bundle bundle = new Bundle();
                         bundle.putString("accessToken",finalAccessToken);
                         fragment.setArguments(bundle);
+                        
 
                         fragmentManager.beginTransaction().replace(R.id.rlContainer, fragment).commit();
                         return true;
