@@ -27,12 +27,19 @@ public class MainActivity extends AppCompatActivity {
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
+        Bundle extras = getIntent().getExtras();
+        String accessToken = "";
+        if (extras != null) {
+            accessToken = extras.getString("accessToken");
+        }
+
         // Defining Fragments (each represents a tab).
         final Fragment fragmentSwipe = new SwipeFragment();
         final Fragment fragmentFeed = new FeedFragment();
         final Fragment fragmentProfile = new ProfileFragment();
 
         // Handles navigation selection.
+        String finalAccessToken = accessToken;
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
                     @Override
@@ -50,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
                                 fragment = fragmentSwipe;
                                 break;
                         }
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("accessToken",finalAccessToken);
+                        fragment.setArguments(bundle);
+
                         fragmentManager.beginTransaction().replace(R.id.rlContainer, fragment).commit();
                         return true;
                     }

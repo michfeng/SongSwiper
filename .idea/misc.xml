@@ -12,11 +12,14 @@
         <entry key="app/src/main/res/layout/activity_post_details.xml" value="0.29438405797101447" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.27445652173913043" />
         <entry key="app/src/main/res/layout/activity_swipe.xml" value="0.29438405797101447" />
+        <entry key="app/src/main/res/layout/cards_holder.xml" value="0.21920289855072464" />
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/layout/fragment_foo.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/layout/fragment_swipe.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.23125" />
+        <entry key="app/src/main/res/xml/card_scene1.xml" value="0.21920289855072464" />
+        <entry key="app/src/main/res/xml/card_scene2.xml" value="0.21920289855072464" />
       </map>
     </option>
   </component>
