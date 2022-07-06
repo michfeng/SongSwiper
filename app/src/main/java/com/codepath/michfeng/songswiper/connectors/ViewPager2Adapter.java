@@ -18,7 +18,8 @@ import com.parse.ParseFile;
 
 import java.util.List;
 
-public class ViewPager2Adapter  extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
+// This class binds each element of the recommendation card stack to their respective values in the layout file.
+public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
 
     private Context context;
     private List<Card> cards;

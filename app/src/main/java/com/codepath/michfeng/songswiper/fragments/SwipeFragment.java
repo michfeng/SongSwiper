@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.RecommendationService;
+import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
 
@@ -90,85 +91,50 @@ public class SwipeFragment extends Fragment {
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
+        RunnableRecs r = new RunnableRecs(spotifyApi);
+
         // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
-        Thread thread = new Thread(new Runnable() {
+        Thread thread = new Thread(r);
+        thread.setName("r");
+        thread.start();
+        try {
+            recommendations = r.getRecs();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG,"recommended tracks: "+recommendations.getTracks().toString());
+
+        for (TrackSimplified rec : recommendations.getTracks()) {
+            Card c = new Card();
+            c.setTrackName(rec.getName());
+            c.setArtistName(rec.getArtists().get(0).getName());
+            //c.setArtistImagePath(rec.getArtists().get(0).getImages().get(0).getUrl());
+            c.setPreview(rec.getPreviewUrl());
+            cards.add(c);
+        }
+
+        adapter.notifyDataSetChanged();
+
+        // To get swipe event of viewpager2.
+        viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void run() {
-                try  {
-                    List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
-                    List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
+            // This method is triggered when there is any scrolling activity for the current page.
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
 
-                    List<String> topGenres = new ArrayList<>();
-                    List<String> topTracks = new ArrayList<>();
-                    List<String> topArtists = new ArrayList<>();
+            // Triggered when you select a new page.
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+            }
 
-                    // At the moment, having all top seeds is not necessary since we are only using
-                    // one of each (recommendation API takes 5 total seeds maximum), but I am storing
-                    // them in case I would like to make more recommendations in the future.
-                    for (TrackFull t : topTrackFull) topTracks.add(t.getId());
-                    for (ArtistFull a : topArtistFull) {
-                        topGenres.addAll(a.getGenres());
-                        topArtists.add(a.getId());
-                    }
-
-
-                    // Making lists for specific seeds
-                    List<String> seed_artists = (new ArrayList<>());
-                    seed_artists.add(topArtists.get(0));
-                    seed_artists.add(topArtists.get(1));
-
-                    List<String> seed_genres = (new ArrayList<>());
-                    seed_genres.add(topGenres.get(0));
-
-                    List<String> seed_tracks = (new ArrayList<>());
-                    seed_tracks.add(topTracks.get(0));
-
-                    Log.i(TAG,"seed tracks: "+seed_tracks.toString());
-                    Log.i(TAG,"seed genres: "+seed_genres.toString());
-                    Log.i(TAG,"seed artists: "+seed_artists.toString());
-
-
-                    recommendations = spotifyApi.getRecommendations(seed_artists,seed_genres,seed_tracks,new HashMap<String, String>());
-                    Log.i(TAG,"recommended tracks: "+recommendations.getTracks().toString());
-
-                    for (TrackSimplified r : recommendations.getTracks()) {
-                        Card c = new Card();
-                        c.setTrackName(r.getName());
-                        c.setArtistName(r.getArtists().get(0).getName());
-                        c.setArtistImagePath(r.getArtists().get(0).getImages().get(0).getUrl());
-                        c.setPreview(r.getPreviewUrl());
-                        cards.add(c);
-                    }
-
-                    adapter.notifyDataSetChanged();
-
-                    // To get swipe event of viewpager2.
-                    viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                        @Override
-                        // This method is triggered when there is any scrolling activity for the current page.
-                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                            super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                        }
-
-                        // Triggered when you select a new page.
-                        @Override
-                        public void onPageSelected(int position) {
-                            super.onPageSelected(position);
-                        }
-
-                        // Triggered when scroll state will be changed.
-                        @Override
-                        public void onPageScrollStateChanged(int state) {
-                            super.onPageScrollStateChanged(state);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            // Triggered when scroll state will be changed.
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
             }
         });
-
-        thread.start();
     }
 
     @Override
