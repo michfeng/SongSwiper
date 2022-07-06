@@ -1,5 +1,8 @@
 package com.codepath.michfeng.songswiper.models;
 
+import org.parceler.Parcel;
+
+@Parcel
 // Keeps track of specific recommendations in "cards"
 public class Card {
     public String trackName;

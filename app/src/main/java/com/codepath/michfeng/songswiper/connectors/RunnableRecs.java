@@ -16,6 +16,7 @@ import spotify.models.recommendations.RecommendationCollection;
 import spotify.models.tracks.TrackFull;
 import spotify.models.tracks.TrackSimplified;
 
+// Runnable-implemented class with accessor method to get recommendations from new Thread.
 public class RunnableRecs implements Runnable {
     RecommendationCollection recs;
     SpotifyApi spotifyApi;
@@ -58,13 +59,13 @@ public class RunnableRecs implements Runnable {
             List<String> seed_tracks = (new ArrayList<>());
             seed_tracks.add(topTracks.get(0));
 
-            Log.i(TAG,"seed tracks: "+seed_tracks.toString());
-            Log.i(TAG,"seed genres: "+seed_genres.toString());
-            Log.i(TAG,"seed artists: "+seed_artists.toString());
+            Log.i(TAG,"seed tracks: " +seed_tracks.toString());
+            Log.i(TAG,"seed genres: " +seed_genres.toString());
+            Log.i(TAG,"seed artists: " +seed_artists.toString());
 
 
-            recs = spotifyApi.getRecommendations(seed_artists,seed_genres,seed_tracks,new HashMap<String, String>());
-            Log.i(TAG,"recommended tracks: "+recs.getTracks().toString());
+            recs = spotifyApi.getRecommendations(seed_artists, seed_genres, seed_tracks, new HashMap<String, String>());
+            Log.i(TAG,"recommended tracks: "+ recs.getTracks().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

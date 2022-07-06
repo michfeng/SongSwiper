@@ -1,5 +1,6 @@
 package com.codepath.michfeng.songswiper.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,10 +15,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.activities.LikedActivity;
 import com.codepath.michfeng.songswiper.connectors.RecommendationService;
 import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,6 +137,12 @@ public class SwipeFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
+                int index = viewpager.getCurrentItem();
+                Card c = cards.get(index);
+
+                Intent i = new Intent(getContext(), LikedActivity.class);
+                i.putExtra("card", Parcels.wrap(c));
+                startActivity(i);
             }
         });
     }
