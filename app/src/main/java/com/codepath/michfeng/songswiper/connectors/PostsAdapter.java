@@ -86,9 +86,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemDescription.setText(ss);
 
 
-            ParseFile image = post.getImage();
+            String image = post.getImage();
+
             if (image != null) {
-                Glide.with(context).load(image.getUrl()).into(itemAlbum);
+                Glide.with(context).load(image).into(itemAlbum);
             }
 
             ParseFile prof = post.getUser().getParseFile("profilePic");

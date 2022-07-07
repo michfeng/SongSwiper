@@ -1,5 +1,7 @@
 package com.codepath.michfeng.songswiper.fragments;
 
+import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -51,6 +53,8 @@ public class SwipeFragment extends Fragment {
     private ViewPager2Adapter adapter;
     private List<Card> cards;
 
+    private int index;
+
     private static final String TAG = "SwipeFragment";
 
     // TODO: Rename and change types of parameters
@@ -86,6 +90,7 @@ public class SwipeFragment extends Fragment {
         viewpager = view.findViewById(R.id.viewpager);
         cards = new ArrayList<>();
         adapter = new ViewPager2Adapter(getContext(),cards);
+        index = 0;
 
         // Set the adapter of ViewPager (swiping view) to our created adapter.
         viewpager.setAdapter(adapter);
@@ -131,18 +136,23 @@ public class SwipeFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+
+                // If the new position is to the left of old position.
+                // Therefore swipe right action (like) has taken place.
+                if (position == index - 1) {
+                    Card c = cards.get(index);
+                    Intent intent = new Intent(getContext(), LikedActivity.class);
+                    intent.putExtra("card", Parcels.wrap(c));
+                    startActivity(intent);
+                }
+
+                index = position;
             }
 
             // Triggered when scroll state will be changed.
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                int index = viewpager.getCurrentItem();
-                Card c = cards.get(index);
-
-                Intent i = new Intent(getContext(), LikedActivity.class);
-                i.putExtra("card", Parcels.wrap(c));
-                startActivity(i);
             }
         });
     }

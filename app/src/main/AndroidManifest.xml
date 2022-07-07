@@ -17,10 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SongSwiper"
         tools:targetApi="31">
-        <activity
-            android:name=".ComposeActivity"
-            android:exported="false" />
-
         <meta-data
             android:name="com.parse.SERVER_URL"
             android:value="@string/back4app_server_url" />
@@ -30,7 +26,9 @@
         <meta-data
             android:name="com.parse.CLIENT_KEY"
             android:value="@string/back4app_client_key" />
-
+        <activity
+            android:name=".activities.ComposeActivity"
+            android:exported="false" />
         <activity
             android:name="com.spotify.sdk.android.auth.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>

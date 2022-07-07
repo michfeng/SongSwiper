@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/card_background.xml" value="0.20879589843750002" />
         <entry key="app/src/main/res/layout/activity_card_details.xml" value="0.29438405797101447" />
         <entry key="app/src/main/res/layout/activity_compose.xml" value="0.2898550724637681" />
         <entry key="app/src/main/res/layout/activity_feed.xml" value="0.21406942174054572" />
@@ -18,7 +19,7 @@
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/layout/fragment_foo.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.37681159420289856" />
-        <entry key="app/src/main/res/layout/fragment_swipe.xml" value="0.37681159420289856" />
+        <entry key="app/src/main/res/layout/fragment_swipe.xml" value="0.1525852148083673" />
         <entry key="app/src/main/res/layout/item_post.xml" value="0.4057832155546519" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.23125" />
         <entry key="app/src/main/res/xml/card_scene1.xml" value="0.21920289855072464" />

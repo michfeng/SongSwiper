@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,11 +16,13 @@ import com.codepath.michfeng.songswiper.models.Card;
 import org.parceler.Parcels;
 
 public class LikedActivity extends AppCompatActivity {
-    TextView tvSong;
-    TextView tvArtist;
-    ImageView ivAlbum;
-    Button share;
-    Button add;
+    private TextView tvSong;
+    private TextView tvArtist;
+    private ImageView ivAlbum;
+    private Button share;
+    private Button add;
+
+    private static final String TAG = "LikedActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +46,12 @@ public class LikedActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG, "Starting intent to ComposeActivity");
                 Intent i = new Intent(LikedActivity.this, ComposeActivity.class);
 
                 i.putExtra("song", card.getTrackName());
                 i.putExtra("artist", card.getArtistName());
+                i.putExtra("image",card.getArtistImagePath());
 
                 startActivity(i);
             }
