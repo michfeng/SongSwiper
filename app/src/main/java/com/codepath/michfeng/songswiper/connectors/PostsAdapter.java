@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.models.Post;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.parse.ParseFile;
 
 import java.util.List;
@@ -62,6 +64,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView itemProfile;
         private TextView itemDescription;
         private TextView itemUsername;
+        private LikeButton btnLike;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +72,27 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemProfile = itemView.findViewById(R.id.itemProfile);
             itemDescription = itemView.findViewById(R.id.itemDescription);
             itemUsername = itemView.findViewById(R.id.itemUsername);
+            btnLike = itemView.findViewById(R.id.btnLike);
+
+            // Handle click for like button.
+            btnLike.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    // Record that specific user has liked the post.
+
+
+                    // Change the appearance of button to reflect (shade).
+                    btnLike.setLiked(true);
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    // Record that user has unliked the post.
+
+                    // Change the appearance of button to reflect action (unshade).
+                    btnLike.setLiked(false);
+                }
+            });
         }
 
 

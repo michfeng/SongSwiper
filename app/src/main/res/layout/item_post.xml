@@ -15,6 +15,17 @@
         android:layout_marginTop="15dp"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <com.like.LikeButton
+        android:id="@+id/btnLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/itemUsername"
+        android:layout_alignStart="@+id/itemUsername"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="20dp"
+        app:icon_size="50dp"
+        app:icon_type="heart" />
+
     <TextView
         android:id="@+id/itemDescription"
         android:layout_width="wrap_content"
