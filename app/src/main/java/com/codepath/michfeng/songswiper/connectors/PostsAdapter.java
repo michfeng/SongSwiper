@@ -19,9 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.models.Post;
+import com.codepath.michfeng.songswiper.models.User;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -73,26 +78,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemDescription = itemView.findViewById(R.id.itemDescription);
             itemUsername = itemView.findViewById(R.id.itemUsername);
             btnLike = itemView.findViewById(R.id.btnLike);
-
-            // Handle click for like button.
-            btnLike.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-                    // Record that specific user has liked the post.
-
-
-                    // Change the appearance of button to reflect (shade).
-                    btnLike.setLiked(true);
-                }
-
-                @Override
-                public void unLiked(LikeButton likeButton) {
-                    // Record that user has unliked the post.
-
-                    // Change the appearance of button to reflect action (unshade).
-                    btnLike.setLiked(false);
-                }
-            });
         }
 
 
@@ -121,6 +106,39 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (prof != null) {
                 Glide.with(context).load(prof.getUrl()).circleCrop().into(itemProfile);
             }
+
+            // Handle click for like button.
+            btnLike.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    // Record that specific user has liked the post.
+                    ParseRelation<User> relation = post.getRelation("likes");
+                    relation.add((User) ParseUser.getCurrentUser());
+                    try {
+                        post.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Change the appearance of button to reflect (shade).
+                    btnLike.setLiked(true);
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    // Record that user has unliked the post.
+                    ParseRelation<User> relation = post.getRelation("likes");
+                    relation.remove((User) ParseUser.getCurrentUser());
+                    try {
+                        post.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Change the appearance of button to reflect action (unshade).
+                    btnLike.setLiked(false);
+                }
+            });
         }
 
         // add list of items, change to type used
