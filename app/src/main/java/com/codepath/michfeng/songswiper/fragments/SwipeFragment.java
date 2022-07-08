@@ -119,6 +119,7 @@ public class SwipeFragment extends Fragment {
             c.setArtistName(rec.getArtists().get(0).getName());
             //c.setArtistImagePath(rec.getArtists().get(0).getImages().get(0).getUrl());
             c.setPreview(rec.getPreviewUrl());
+            c.setUri(c.getUri());
             cards.add(c);
         }
 
@@ -143,6 +144,7 @@ public class SwipeFragment extends Fragment {
                     Card c = cards.get(index);
                     Intent intent = new Intent(getContext(), LikedActivity.class);
                     intent.putExtra("card", Parcels.wrap(c));
+                    intent.putExtra("accesstoken", accessToken);
                     startActivity(intent);
                 }
 

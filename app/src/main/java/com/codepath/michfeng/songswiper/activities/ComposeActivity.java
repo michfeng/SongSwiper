@@ -83,7 +83,7 @@ public class ComposeActivity extends AppCompatActivity {
 
                 // Redirect back to swiping.
                 Intent intent = new Intent(ComposeActivity.this, SwipeActivity.class);
-                // *** Need to get access token here to pass back in
+                intent.putExtra("accessToken", getIntent().getStringExtra("accesstoken"));
                 startActivity(intent);
             }
         });
