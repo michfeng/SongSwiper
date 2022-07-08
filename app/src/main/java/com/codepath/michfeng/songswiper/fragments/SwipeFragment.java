@@ -1,7 +1,5 @@
 package com.codepath.michfeng.songswiper.fragments;
 
-import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -14,11 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.activities.LikedActivity;
-import com.codepath.michfeng.songswiper.connectors.RecommendationService;
 import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
@@ -26,14 +22,10 @@ import com.codepath.michfeng.songswiper.models.Card;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import spotify.api.spotify.SpotifyApi;
-import spotify.models.artists.ArtistFull;
 import spotify.models.recommendations.RecommendationCollection;
-import spotify.models.tracks.TrackFull;
 import spotify.models.tracks.TrackSimplified;
 
 /**

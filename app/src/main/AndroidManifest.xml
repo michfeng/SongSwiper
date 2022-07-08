@@ -33,9 +33,6 @@
             android:name="com.spotify.sdk.android.auth.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         <activity
-            android:name=".activities.ProfileActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.LikedActivity"
             android:exported="false" />
         <activity
@@ -43,12 +40,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.CardDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.SwipeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.FeedActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
