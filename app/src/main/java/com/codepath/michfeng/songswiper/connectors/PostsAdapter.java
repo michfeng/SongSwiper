@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.activities.PostDetailsActivity;
 import com.codepath.michfeng.songswiper.models.Post;
 import com.codepath.michfeng.songswiper.models.User;
 import com.like.LikeButton;
@@ -30,9 +31,12 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
+// Binds posts to recycler view on feed.
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
     private Context context;
     private List<Post> posts;
+
+    private static final String TAG = "PostsAdapter";
 
     public PostsAdapter(Context context, List<Post> posts) {
         this.context = context;
@@ -64,7 +68,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView itemAlbum;
         private ImageView itemProfile;
         private TextView itemDescription;
@@ -145,6 +149,22 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         public void addAll(List<Post> list) {
             posts.addAll(list);
             notifyDataSetChanged();
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+
+            // Make sure that position is valid.
+            if (position != RecyclerView.NO_POSITION) {
+                Post post = posts.get(position);
+                Log.i(TAG, "post: " + post.getCaption());
+
+                // Create intent to redirect to details page.
+                Intent intent = new Intent(context, PostDetailsActivity.class);
+                intent.putExtra("post", post);
+                context.startActivity(intent);
+            }
         }
     }
 }
