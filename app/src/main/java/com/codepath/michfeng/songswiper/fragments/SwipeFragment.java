@@ -26,6 +26,7 @@ import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
 import spotify.models.recommendations.RecommendationCollection;
+import spotify.models.tracks.TrackLink;
 import spotify.models.tracks.TrackSimplified;
 
 /**
@@ -78,17 +79,18 @@ public class SwipeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String accessToken = getArguments().getString("accessToken");
+        Log.i(TAG,"access token: " + accessToken);
+
         // Initialize fields.
         viewpager = view.findViewById(R.id.viewpager);
         cards = new ArrayList<>();
-        adapter = new ViewPager2Adapter(getContext(),cards);
+        adapter = new ViewPager2Adapter(getContext(), cards, accessToken);
         index = 0;
 
         // Set the adapter of ViewPager (swiping view) to our created adapter.
         viewpager.setAdapter(adapter);
 
-        String accessToken = getArguments().getString("accessToken");
-        Log.i(TAG,"access token: "+accessToken);
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
@@ -106,13 +108,19 @@ public class SwipeFragment extends Fragment {
         Log.i(TAG,"recommended tracks: "+recommendations.getTracks().toString());
 
         for (TrackSimplified rec : recommendations.getTracks()) {
-            Card c = new Card();
-            c.setTrackName(rec.getName());
-            c.setArtistName(rec.getArtists().get(0).getName());
-            //c.setArtistImagePath(rec.getArtists().get(0).getImages().get(0).getUrl());
-            c.setPreview(rec.getPreviewUrl());
-            c.setUri(c.getUri());
-            cards.add(c);
+            // Check whether this song is playable in user's market.
+            if (rec.isPlayable()) {
+                Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
+                if (rec.getArtists().get(0).getImages() == null)
+                    Log.i(TAG, "null images");
+
+                Card c = new Card();
+                c.setTrackName(rec.getName());
+                c.setArtistName(rec.getArtists().get(0).getName());
+                c.setUri(rec.getUri());
+                c.setPreview(rec.getPreviewUrl());
+                cards.add(c);
+           }
         }
 
         adapter.notifyDataSetChanged();

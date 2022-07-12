@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "7d2e57d7cf85444da0db0412f4116c80";
     private static final String REDIRECT_URI = "com.codepath.michfeng.songswiper://callback";
     private static final int REQUEST_CODE = 1337;
-    private static final String SCOPES = "user-read-recently-played,playlist-read-private,user-modify-playback-state,app-remote-control,user-top-read,user-library-modify,user-follow-read,user-read-private";
+    private static final String SCOPES = "user-read-recently-played,playlist-modify-public,playlist-read-private,user-modify-playback-state,app-remote-control,user-top-read,user-library-modify,user-follow-read,user-read-private";
     //  may need to adjust scopes ^ ***
 
     private Button btnAuthenticate;

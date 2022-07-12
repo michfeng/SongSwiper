@@ -23,9 +23,12 @@ import com.codepath.michfeng.songswiper.models.Post;
 import com.codepath.michfeng.songswiper.models.User;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
@@ -111,13 +114,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 Glide.with(context).load(prof.getUrl()).circleCrop().into(itemProfile);
             }
 
+            // Set like button initial state.
+            ParseRelation<ParseUser> relation = post.getRelation("likes");
+            ParseQuery<ParseUser> relationQuery = relation.getQuery();
+
+            relationQuery.whereEqualTo(ParseUser.KEY_OBJECT_ID, ParseUser.getCurrentUser());
+            relationQuery.getFirstInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser object, ParseException e) {
+                    if (e == null) {
+                        // The current user is contained in the like relation, so the heart should be filled.
+                        btnLike.setLiked(true);
+                    } else {
+                        if (e.equals(ParseException.OBJECT_NOT_FOUND))
+                            btnLike.setLiked(false);
+                        else
+                            e.printStackTrace();
+                    }
+                }
+            });
+
             // Handle click for like button.
             btnLike.setOnLikeListener(new OnLikeListener() {
                 @Override
                 public void liked(LikeButton likeButton) {
                     // Record that specific user has liked the post.
-                    ParseRelation<User> relation = post.getRelation("likes");
-                    relation.add((User) ParseUser.getCurrentUser());
+                    ParseRelation<ParseUser> relation = post.getRelation("likes");
+                    relation.add(ParseUser.getCurrentUser());
                     try {
                         post.save();
                     } catch (ParseException e) {
@@ -131,8 +154,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 @Override
                 public void unLiked(LikeButton likeButton) {
                     // Record that user has unliked the post.
-                    ParseRelation<User> relation = post.getRelation("likes");
-                    relation.remove((User) ParseUser.getCurrentUser());
+                    ParseRelation<ParseUser> relation = post.getRelation("likes");
+                    relation.remove(ParseUser.getCurrentUser());
                     try {
                         post.save();
                     } catch (ParseException e) {

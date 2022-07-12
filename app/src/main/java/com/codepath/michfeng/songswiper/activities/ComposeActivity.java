@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.fragments.FeedFragment;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.codepath.michfeng.songswiper.models.Post;
 import com.parse.ParseException;
@@ -83,7 +84,7 @@ public class ComposeActivity extends AppCompatActivity {
                 Log.i(TAG, "Post save was successful");
 
                 // Redirect back to swiping.
-                Intent intent = new Intent(ComposeActivity.this, SwipeFragment.class);
+                Intent intent = new Intent(ComposeActivity.this, FeedFragment.class);
                 intent.putExtra("accessToken", getIntent().getStringExtra("accesstoken"));
                 startActivity(intent);
             }
