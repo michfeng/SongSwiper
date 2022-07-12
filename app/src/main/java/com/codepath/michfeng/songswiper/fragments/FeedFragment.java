@@ -2,13 +2,26 @@ package com.codepath.michfeng.songswiper.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.connectors.PostsAdapter;
+import com.codepath.michfeng.songswiper.models.Post;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +34,13 @@ public class FeedFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private RecyclerView rvFeed;
+    protected PostsAdapter adapter;
+    protected List<Post> allPosts;
+
+    private static final String TAG = "FeedFragment";
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -48,19 +68,62 @@ public class FeedFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_feed, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        rvFeed = view.findViewById(R.id.rvFeed);
+
+        // Initialize list that holds posts.
+        allPosts = new ArrayList<>();
+        adapter = new PostsAdapter(getContext(), allPosts);
+
+        // Set adapter on recycler view.
+        rvFeed.setAdapter(adapter);
+
+        // Set layout manager on recycler view.
+        rvFeed.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        queryPosts();
+    }
+
+    private void queryPosts() {
+        // Specify which class to query.
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        // Include data referred by user key.
+        query.include(Post.KEY_USER);
+
+        // Limit query to latest 20 items.
+        query.setLimit(20);
+
+        // Order posts by creation date.
+        query.addDescendingOrder("createdAt");
+
+        // Start asynchronous call for posts.
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG,"Issue with getting posts",e);
+                    return;
+                }
+                for (Post post : posts) {
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                }
+
+                // Save received posts.
+                allPosts.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }

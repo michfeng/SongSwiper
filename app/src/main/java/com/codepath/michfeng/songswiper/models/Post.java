@@ -1,10 +1,12 @@
 package com.codepath.michfeng.songswiper.models;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.Date;
@@ -13,8 +15,9 @@ import java.util.Date;
 public class Post extends ParseObject {
 
     public static final String KEY_CAPTION = "caption";
-    public static final String KEY_IMAGE = "art";
+    public static final String KEY_IMAGE = "artpath";
     public static final String KEY_USER = "user";
+    public static final String KEY_LIKES = "likes";
 
     public String getCaption() {
         return getString(KEY_CAPTION);
@@ -24,12 +27,12 @@ public class Post extends ParseObject {
         put(KEY_CAPTION,caption);
     }
 
-    public ParseFile getImage() {
-        return getParseFile(KEY_IMAGE);
+    public String getImage() {
+        return getString(KEY_IMAGE);
     }
 
-    public void setImage(ParseFile parseFile) {
-        put(KEY_IMAGE,parseFile);
+    public void setImage(String path) {
+        put(KEY_IMAGE, path);
     }
 
     public ParseUser getUser() {
@@ -39,6 +42,8 @@ public class Post extends ParseObject {
     public void setUser(ParseUser user) {
         put(KEY_USER,user);
     }
+
+    public ParseRelation<User> getLikes () { return getRelation("likes"); }
 
     public static String calculateTimeAgo(Date createdAt) {
 

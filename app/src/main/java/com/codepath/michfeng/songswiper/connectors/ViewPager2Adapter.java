@@ -1,6 +1,7 @@
 package com.codepath.michfeng.songswiper.connectors;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,27 @@ import com.codepath.michfeng.songswiper.models.Card;
 import com.codepath.michfeng.songswiper.models.Post;
 import com.parse.ParseFile;
 
+import java.io.StringBufferInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ViewPager2Adapter  extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
+import spotify.api.spotify.SpotifyApi;
+import spotify.models.players.Offset;
+import spotify.models.players.requests.ChangePlaybackStateRequestBody;
+
+// This class binds each element of the recommendation card stack to their respective values in the layout file.
+public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
 
     private Context context;
     private List<Card> cards;
+    private String accessToken;
 
-    public ViewPager2Adapter(Context context, List<Card> cards) {
+    private static final String TAG = "ViewPager2Adapter";
+
+    public ViewPager2Adapter(Context context, List<Card> cards, String accessToken) {
         this.context = context;
         this.cards = cards;
+        this.accessToken = accessToken;
     }
 
     @NonNull
@@ -38,6 +50,26 @@ public class ViewPager2Adapter  extends RecyclerView.Adapter<ViewPager2Adapter.V
     @Override
     public void onBindViewHolder(@NonNull ViewPager2Adapter.ViewHolder holder, int position) {
         Card card = cards.get(position);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SpotifyApi api = new SpotifyApi(accessToken);
+
+                // Context to play in (can be playlist/album/artist). Here we want the album of the track.
+                ArrayList <String> uris = new ArrayList<>();
+                Log.i(TAG, "uri: " + card.getUri());
+                Log.i(TAG, "uri size" + uris.size());
+                uris.add(card.getUri());
+
+                ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
+                body.setUris(uris);
+
+                api.changePlaybackState(body);
+            }
+        });
+
+        thread.start();
         holder.bind(card);
     }
 

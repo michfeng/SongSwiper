@@ -1,5 +1,8 @@
 package com.codepath.michfeng.songswiper.models;
 
+import org.parceler.Parcel;
+
+@Parcel
 // Keeps track of specific recommendations in "cards"
 public class Card {
     public String trackName;
@@ -7,15 +10,17 @@ public class Card {
     public String coverImagePath;
     public String artistImagePath;
     public String preview;
+    public String uri;
 
     public Card() {}
 
-    public Card (String track, String artist, String coverIm, String artistIm,String preview) {
+    public Card (String track, String artist, String coverIm, String artistIm, String preview, String uri) {
         this.trackName = track;
         this.artistName = artist;
         this.coverImagePath = coverIm;
         this.artistImagePath = artistIm;
         this.preview = preview;
+        this.uri = uri;
     }
 
     public String getArtistImagePath() {
@@ -57,4 +62,8 @@ public class Card {
     public void setPreview(String preview) {
         this.preview = preview;
     }
+
+    public String getUri() { return uri; }
+
+    public void setUri(String uri) { this.uri = uri; }
 }

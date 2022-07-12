@@ -1,5 +1,6 @@
 package com.codepath.michfeng.songswiper.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,22 +12,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.codepath.michfeng.songswiper.R;
-import com.codepath.michfeng.songswiper.connectors.RecommendationService;
+import com.codepath.michfeng.songswiper.activities.LikedActivity;
+import com.codepath.michfeng.songswiper.connectors.RunnableImage;
+import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import spotify.api.spotify.SpotifyApi;
-import spotify.models.artists.ArtistFull;
 import spotify.models.recommendations.RecommendationCollection;
-import spotify.models.tracks.TrackFull;
+import spotify.models.tracks.TrackLink;
 import spotify.models.tracks.TrackSimplified;
 
 /**
@@ -45,6 +46,8 @@ public class SwipeFragment extends Fragment {
     private ViewPager2 viewpager;
     private ViewPager2Adapter adapter;
     private List<Card> cards;
+
+    private int index;
 
     private static final String TAG = "SwipeFragment";
 
@@ -77,98 +80,95 @@ public class SwipeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String accessToken = getArguments().getString("accessToken");
+        Log.i(TAG,"access token: " + accessToken);
+
         // Initialize fields.
         viewpager = view.findViewById(R.id.viewpager);
         cards = new ArrayList<>();
-        adapter = new ViewPager2Adapter(getContext(),cards);
+        adapter = new ViewPager2Adapter(getContext(), cards, accessToken);
+        index = 0;
 
         // Set the adapter of ViewPager (swiping view) to our created adapter.
         viewpager.setAdapter(adapter);
 
-        String accessToken = getArguments().getString("accessToken");
-        Log.i(TAG,"access token: "+accessToken);
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
+        RunnableRecs r = new RunnableRecs(spotifyApi);
+
         // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try  {
-                    List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
-                    List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
+        Thread thread = new Thread(r);
+        thread.setName("r");
+        thread.start();
+        try {
+            recommendations = r.getRecs();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
 
-                    List<String> topGenres = new ArrayList<>();
-                    List<String> topTracks = new ArrayList<>();
-                    List<String> topArtists = new ArrayList<>();
+        for (TrackSimplified rec : recommendations.getTracks()) {
+            // Check whether this song is playable in user's market.
+            //if (rec.isPlayable()) {
+                Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
+                if (rec.getArtists().get(0).getImages() == null)
+                    Log.i(TAG, "null images");
 
-                    // At the moment, having all top seeds is not necessary since we are only using
-                    // one of each (recommendation API takes 5 total seeds maximum), but I am storing
-                    // them in case I would like to make more recommendations in the future.
-                    for (TrackFull t : topTrackFull) topTracks.add(t.getId());
-                    for (ArtistFull a : topArtistFull) {
-                        topGenres.addAll(a.getGenres());
-                        topArtists.add(a.getId());
-                    }
+                Card c = new Card();
+                c.setTrackName(rec.getName());
+                c.setArtistName(rec.getArtists().get(0).getName());
+                c.setUri(rec.getUri());
+                c.setPreview(rec.getPreviewUrl());
 
-
-                    // Making lists for specific seeds
-                    List<String> seed_artists = (new ArrayList<>());
-                    seed_artists.add(topArtists.get(0));
-                    seed_artists.add(topArtists.get(1));
-
-                    List<String> seed_genres = (new ArrayList<>());
-                    seed_genres.add(topGenres.get(0));
-
-                    List<String> seed_tracks = (new ArrayList<>());
-                    seed_tracks.add(topTracks.get(0));
-
-                    Log.i(TAG,"seed tracks: "+seed_tracks.toString());
-                    Log.i(TAG,"seed genres: "+seed_genres.toString());
-                    Log.i(TAG,"seed artists: "+seed_artists.toString());
-
-
-                    recommendations = spotifyApi.getRecommendations(seed_artists,seed_genres,seed_tracks,new HashMap<String, String>());
-                    Log.i(TAG,"recommended tracks: "+recommendations.getTracks().toString());
-
-                    for (TrackSimplified r : recommendations.getTracks()) {
-                        Card c = new Card();
-                        c.setTrackName(r.getName());
-                        c.setArtistName(r.getArtists().get(0).getName());
-                        c.setArtistImagePath(r.getArtists().get(0).getImages().get(0).getUrl());
-                        c.setPreview(r.getPreviewUrl());
-                        cards.add(c);
-                    }
-
-                    adapter.notifyDataSetChanged();
-
-                    // To get swipe event of viewpager2.
-                    viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                        @Override
-                        // This method is triggered when there is any scrolling activity for the current page.
-                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                            super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                        }
-
-                        // Triggered when you select a new page.
-                        @Override
-                        public void onPageSelected(int position) {
-                            super.onPageSelected(position);
-                        }
-
-                        // Triggered when scroll state will be changed.
-                        @Override
-                        public void onPageScrollStateChanged(int state) {
-                            super.onPageScrollStateChanged(state);
-                        }
-                    });
-                } catch (Exception e) {
+                RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
+                Thread threadImage = new Thread(runImage);
+                threadImage.setName("runImage");
+                threadImage.start();
+                try {
+                    c.setCoverImagePath(runImage.getImage().getUrl());
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                cards.add(c);
+           //}
+        }
+
+        adapter.notifyDataSetChanged();
+
+        // To get swipe event of viewpager2.
+        viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            // This method is triggered when there is any scrolling activity for the current page.
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            // Triggered when you select a new page.
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+
+                // If the new position is to the left of old position.
+                // Therefore swipe right action (like) has taken place.
+                if (position == index - 1) {
+                    Card c = cards.get(index);
+                    Intent intent = new Intent(getContext(), LikedActivity.class);
+                    intent.putExtra("card", Parcels.wrap(c));
+                    intent.putExtra("accesstoken", accessToken);
+                    startActivity(intent);
+                }
+
+                index = position;
+            }
+
+            // Triggered when scroll state will be changed.
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
             }
         });
-
-        thread.start();
     }
 
     @Override
