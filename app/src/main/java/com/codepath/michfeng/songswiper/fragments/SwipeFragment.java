@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.activities.LikedActivity;
+import com.codepath.michfeng.songswiper.connectors.RunnableImage;
 import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
@@ -105,11 +106,11 @@ public class SwipeFragment extends Fragment {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Log.i(TAG,"recommended tracks: "+recommendations.getTracks().toString());
+        Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
 
         for (TrackSimplified rec : recommendations.getTracks()) {
             // Check whether this song is playable in user's market.
-            if (rec.isPlayable()) {
+            //if (rec.isPlayable()) {
                 Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
                 if (rec.getArtists().get(0).getImages() == null)
                     Log.i(TAG, "null images");
@@ -119,8 +120,19 @@ public class SwipeFragment extends Fragment {
                 c.setArtistName(rec.getArtists().get(0).getName());
                 c.setUri(rec.getUri());
                 c.setPreview(rec.getPreviewUrl());
+
+                RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
+                Thread threadImage = new Thread(runImage);
+                threadImage.setName("runImage");
+                threadImage.start();
+                try {
+                    c.setCoverImagePath(runImage.getImage().getUrl());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 cards.add(c);
-           }
+           //}
         }
 
         adapter.notifyDataSetChanged();

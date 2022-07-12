@@ -32,7 +32,7 @@ public class Post extends ParseObject {
     }
 
     public void setImage(String path) {
-        put(KEY_IMAGE,path);
+        put(KEY_IMAGE, path);
     }
 
     public ParseUser getUser() {

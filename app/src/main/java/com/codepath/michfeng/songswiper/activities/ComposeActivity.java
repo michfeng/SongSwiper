@@ -1,6 +1,7 @@
 package com.codepath.michfeng.songswiper.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -84,8 +85,9 @@ public class ComposeActivity extends AppCompatActivity {
                 Log.i(TAG, "Post save was successful");
 
                 // Redirect back to swiping.
-                Intent intent = new Intent(ComposeActivity.this, FeedFragment.class);
-                intent.putExtra("accessToken", getIntent().getStringExtra("accesstoken"));
+                Intent intent = new Intent(ComposeActivity.this, SwipeFragmentExtended.class);
+                Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
+                intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
                 startActivity(intent);
             }
         });

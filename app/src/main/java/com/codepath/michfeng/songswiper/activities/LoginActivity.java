@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Goes to SwipeActivity once authentication is done.
-        Intent i = new Intent(LoginActivity.this,MainActivity.class);
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
         i.putExtra("accessToken",accessToken);
         Log.i(TAG,"Access token: "+accessToken);
         startActivity(i);

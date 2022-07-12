@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.models.Card;
 import com.parse.ParseUser;
@@ -53,11 +54,16 @@ public class LikedActivity extends AppCompatActivity {
         share = (Button) findViewById(R.id.btnShareLiked);
         add = (Button) findViewById(R.id.btnAddLiked);
         accessToken = getIntent().getStringExtra("accesstoken");
+        Log.i(TAG, "accessToken: " + accessToken);
 
         Card card = (Card) Parcels.unwrap(getIntent().getParcelableExtra("card"));
 
         tvSong.setText(card.getTrackName());
         tvArtist.setText(card.getArtistName());
+
+        if (card.getCoverImagePath() != null) {
+            Glide.with(this).load(card.getCoverImagePath()).into(ivAlbum);
+        }
 
 
         // Handle click event to share liked song.
@@ -69,8 +75,8 @@ public class LikedActivity extends AppCompatActivity {
 
                 i.putExtra("song", card.getTrackName());
                 i.putExtra("artist", card.getArtistName());
-                i.putExtra("image",card.getArtistImagePath());
-                i.putExtra("accesstoken", accessToken);
+                i.putExtra("image",card.getCoverImagePath());
+                i.putExtra("accessToken", accessToken);
 
                 startActivity(i);
             }
