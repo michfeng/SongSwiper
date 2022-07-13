@@ -19,6 +19,7 @@ import com.codepath.michfeng.songswiper.models.SpotifyUser;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.saksham.customloadingdialog.LoaderKt;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         btnAuthenticate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LoaderKt.showDialog(LoginActivity.this, true, R.raw.lottie);
                 authenticateSpotify();
             }
         });

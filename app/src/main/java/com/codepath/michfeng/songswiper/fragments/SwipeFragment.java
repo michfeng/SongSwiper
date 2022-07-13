@@ -19,6 +19,7 @@ import com.codepath.michfeng.songswiper.connectors.RunnableImage;
 import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.saksham.customloadingdialog.LoaderKt;
 
 import org.parceler.Parcels;
 
@@ -92,10 +93,11 @@ public class SwipeFragment extends Fragment {
         // Set the adapter of ViewPager (swiping view) to our created adapter.
         viewpager.setAdapter(adapter);
 
+        // Start loading screen.
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
-        RunnableRecs r = new RunnableRecs(spotifyApi);
+        RunnableRecs r = new RunnableRecs(spotifyApi, getContext());
 
         // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
         Thread thread = new Thread(r);
@@ -169,6 +171,7 @@ public class SwipeFragment extends Fragment {
                 super.onPageScrollStateChanged(state);
             }
         });
+
     }
 
     @Override

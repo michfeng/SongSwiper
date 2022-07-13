@@ -1,10 +1,14 @@
 package com.codepath.michfeng.songswiper.connectors;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.saksham.customloadingdialog.LoaderKt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,16 +25,21 @@ public class RunnableRecs implements Runnable {
     RecommendationCollection recs;
     SpotifyApi spotifyApi;
     private volatile boolean finish;
+    Context context;
 
     private static final String TAG = "RunnableRecs";
 
-    public RunnableRecs(SpotifyApi api) {
+    public RunnableRecs(SpotifyApi api, Context context) {
         this.spotifyApi = api;
+        this.context = context;
     }
 
     @Override
     public void run() {
         try  {
+            Log.i(TAG, "starting loading screen");
+            LoaderKt.showDialog(context, true, R.raw.lottie);
+
             List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
             List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
 

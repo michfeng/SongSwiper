@@ -34,6 +34,7 @@
         <activity
             android:name=".activities.ComposeActivity"
             android:exported="false" />
+
         <activity
             android:name="com.spotify.sdk.android.auth.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

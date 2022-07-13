@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.fragments.FeedFragment;
@@ -15,6 +17,7 @@ import com.codepath.michfeng.songswiper.fragments.ProfileFragment;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.ParseUser;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 
 import spotify.api.spotify.SpotifyApi;
@@ -85,16 +88,16 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    /* @Override
-    public boolean onOptionsItemsSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle presses on action bar items.
-        switch (item.getItemId()) {
-            case R.id.logout: {
-                // Handle what to do on log out.
-                SpotifyApi spotifyApi = new SpotifyApi(accessToken);
-
-            }
+        if (item.getItemId() == R.id.logout) {
+            ParseUser.logOutInBackground();
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
+            return true;
         }
-        return true;
-    }*/
+        return super.onOptionsItemSelected(item);
+    }
 }
