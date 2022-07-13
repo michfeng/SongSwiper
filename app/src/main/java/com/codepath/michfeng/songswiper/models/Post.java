@@ -18,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_IMAGE = "artpath";
     public static final String KEY_USER = "user";
     public static final String KEY_LIKES = "likes";
+    public static final String KEY_URI = "uri";
 
     public String getCaption() {
         return getString(KEY_CAPTION);
@@ -43,7 +44,11 @@ public class Post extends ParseObject {
         put(KEY_USER,user);
     }
 
-    public ParseRelation<User> getLikes () { return getRelation("likes"); }
+    public ParseRelation<User> getLikes () { return getRelation(KEY_LIKES); }
+
+    public void setUri (String uri) { put(KEY_LIKES, uri); }
+
+    public String getUri () { return getString(KEY_URI); }
 
     public static String calculateTimeAgo(Date createdAt) {
 

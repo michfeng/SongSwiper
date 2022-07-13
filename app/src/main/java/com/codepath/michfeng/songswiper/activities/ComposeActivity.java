@@ -37,6 +37,7 @@ public class ComposeActivity extends AppCompatActivity {
     Button post;
     private ParseUser currentUser;
     private String photoPath;
+    private String uri;
 
     private final static String TAG = "ComposeActivity";
 
@@ -48,6 +49,7 @@ public class ComposeActivity extends AppCompatActivity {
         etCompose = (EditText) findViewById(R.id.etCompose);
         post = (Button) findViewById(R.id.btnPost);
         currentUser = ParseUser.getCurrentUser();
+        uri = getIntent().getStringExtra("uri");
 
         photoPath = getIntent().getStringExtra("image");
 
@@ -63,16 +65,17 @@ public class ComposeActivity extends AppCompatActivity {
                 }
 
                 // Save post through outer method.
-                savePost(description, currentUser, photoPath);
+                savePost(description, currentUser, photoPath, uri);
             }
         });
     }
 
-    private void savePost(String description, ParseUser user, String photoUrl)  {
+    private void savePost(String description, ParseUser user, String photoUrl, String uri)  {
         Post post = new Post();
         post.setCaption(description);
         post.setUser(user);
         post.setImage(photoUrl);
+        post.setUri(uri);
 
         post.saveInBackground(new SaveCallback() {
             @Override
@@ -85,7 +88,7 @@ public class ComposeActivity extends AppCompatActivity {
                 Log.i(TAG, "Post save was successful");
 
                 // Redirect back to swiping.
-                Intent intent = new Intent(ComposeActivity.this, SwipeFragmentExtended.class);
+                Intent intent = new Intent(ComposeActivity.this, MainActivity.class);
                 Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
                 intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
                 startActivity(intent);

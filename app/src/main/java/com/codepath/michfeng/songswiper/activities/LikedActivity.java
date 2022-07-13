@@ -76,6 +76,7 @@ public class LikedActivity extends AppCompatActivity {
                 i.putExtra("song", card.getTrackName());
                 i.putExtra("artist", card.getArtistName());
                 i.putExtra("image",card.getCoverImagePath());
+                i.putExtra("uri", card.getUri());
                 i.putExtra("accessToken", accessToken);
 
                 startActivity(i);

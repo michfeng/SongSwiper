@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,11 +19,15 @@ public class PostDetailsActivity extends AppCompatActivity {
     private ImageView ivAlbum;
     private TextView tvCaption;
 
+    private static final String TAG = "PostDetailsActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_details);
+
+        Log.i(TAG, "I made it here");
 
         ivUser = findViewById(R.id.ivDetailsUser);
         tvUser = findViewById(R.id.tvDetailUsername);
