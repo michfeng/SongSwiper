@@ -83,7 +83,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder /*implements View.OnClickListener*/ {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemAlbum;
         private ImageView itemProfile;
         private TextView itemDescription;

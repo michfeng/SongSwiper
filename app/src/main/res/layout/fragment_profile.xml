@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        tools:layout_editor_absoluteX="139dp"
+        tools:layout_editor_absoluteY="69dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivProfile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:textSize="24sp"
+        tools:text="Michelle Feng" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistViewer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="profile" />
+        android:layout_below="@+id/userSince"
+        android:layout_marginTop="0dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/userSince"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        tools:text="User since June 13, 2022" />
+
+</RelativeLayout>

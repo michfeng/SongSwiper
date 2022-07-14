@@ -1,4 +1,6 @@
 package com.codepath.michfeng.songswiper.activities;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,9 +17,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.UserService;
+import com.codepath.michfeng.songswiper.models.Artist;
 import com.codepath.michfeng.songswiper.models.SpotifyUser;
+import com.codepath.michfeng.songswiper.models.Track;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.saksham.customloadingdialog.LoaderKt;
 import com.spotify.sdk.android.auth.AuthorizationClient;
@@ -27,13 +32,19 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import spotify.api.authorization.AuthorizationCodeFlowPKCE;
 import spotify.api.authorization.AuthorizationRefreshToken;
 import spotify.api.enums.AuthorizationScope;
+import spotify.models.artists.ArtistFull;
 import spotify.models.paging.Paging;
 import spotify.models.tracks.TrackFull;
+import spotify.models.tracks.TrackSimplified;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -171,6 +182,11 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e(TAG, "Issue with login", e);
                     Toast.makeText(LoginActivity.this, "Invalid login", Toast.LENGTH_SHORT).show();
                     return;
+                } else {
+                    ParseUser newUser = ParseUser.getCurrentUser();
+                    newUser.put("likedTracks", new LinkedList<TrackSimplified>());
+                    newUser.put("likedArtists", new LinkedList<ArtistFull>());
+                    newUser.put("likedGenres", new LinkedList<String>());
                 }
             }
         });
@@ -183,6 +199,10 @@ public class LoginActivity extends AppCompatActivity {
         ParseUser newUser = new ParseUser();
         newUser.setUsername(id);
         newUser.setPassword("password");
+
+        newUser.put("likedTracks", new LinkedList<TrackSimplified>());
+        newUser.put("likedArtists", new LinkedList<ArtistFull>());
+        newUser.put("likedGenres", new LinkedList<String>());
 
         newUser.signUpInBackground();
     }

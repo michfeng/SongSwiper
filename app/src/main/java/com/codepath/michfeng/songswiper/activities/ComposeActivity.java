@@ -50,6 +50,7 @@ public class ComposeActivity extends AppCompatActivity {
         post = (Button) findViewById(R.id.btnPost);
         currentUser = ParseUser.getCurrentUser();
         uri = getIntent().getStringExtra("uri");
+        Log.i(TAG, uri);
 
         photoPath = getIntent().getStringExtra("image");
 

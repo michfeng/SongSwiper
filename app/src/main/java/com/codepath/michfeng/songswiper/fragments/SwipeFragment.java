@@ -118,6 +118,7 @@ public class SwipeFragment extends Fragment {
                     Log.i(TAG, "null images");
 
                 Card c = new Card();
+                c.setTrack(rec);
                 c.setTrackName(rec.getName());
                 c.setArtistName(rec.getArtists().get(0).getName());
                 c.setUri(rec.getUri());

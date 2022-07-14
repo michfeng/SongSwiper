@@ -11,10 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.connectors.RunnableGenre;
+import com.codepath.michfeng.songswiper.models.Artist;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.codepath.michfeng.songswiper.models.Track;
 import com.parse.ParseUser;
 
 import org.parceler.Parcels;
@@ -22,15 +26,19 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import spotify.api.spotify.SpotifyApi;
+import spotify.models.artists.ArtistFull;
 import spotify.models.paging.Paging;
 import spotify.models.playlists.PlaylistFull;
 import spotify.models.playlists.PlaylistSimplified;
 import spotify.models.playlists.requests.CreateUpdatePlaylistRequestBody;
+import spotify.models.tracks.TrackSimplified;
 
 public class LikedActivity extends AppCompatActivity {
     private TextView tvSong;
@@ -63,6 +71,25 @@ public class LikedActivity extends AppCompatActivity {
 
         if (card.getCoverImagePath() != null) {
             Glide.with(this).load(card.getCoverImagePath()).into(ivAlbum);
+        }
+
+        // Add liked song, genre, and artist to their respective artist.
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        Queue<TrackSimplified> likedTracks = (LinkedList<TrackSimplified>) currentUser.get("likedTracks");
+        Queue<ArtistFull> likedArtists = (LinkedList<ArtistFull>) currentUser.get("likedArtists");
+        Queue<String> likedGenres = (LinkedList<String>) currentUser.get("likedGenres");
+
+        likedTracks.add(card.getTrack());
+        likedArtists.add(card.getTrack().getArtists().get(0));
+
+        RunnableGenre runG = new RunnableGenre(new SpotifyApi(accessToken), card.getTrack().getId());
+        Thread thread = new Thread(runG);
+        thread.setName("runG");
+        thread.start();
+        try {
+            likedGenres.addAll(runG.getGenres());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 
@@ -125,12 +152,20 @@ public class LikedActivity extends AppCompatActivity {
 
                                 spotifyApi.addItemsToPlaylist(track, id, 0);
                                 Log.i(TAG, "added " + card.getTrackName());
+                                Toast.makeText(LikedActivity.this, "Song successfully added to playlist!", Toast.LENGTH_LONG).show();
+
                             }
                         }
                     }
                 });
 
                 thread.start();
+
+                // Redirect back to swiping.
+                Intent intent = new Intent(LikedActivity.this, MainActivity.class);
+                Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
+                intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
+                startActivity(intent);
             }
         });
     }
