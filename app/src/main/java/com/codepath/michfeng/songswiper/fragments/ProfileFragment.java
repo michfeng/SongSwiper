@@ -18,12 +18,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.PlaylistAdapter;
-import com.codepath.michfeng.songswiper.connectors.PostsAdapter;
-import com.codepath.michfeng.songswiper.connectors.RunnableImage;
-import com.codepath.michfeng.songswiper.connectors.RunnablePlaylist;
-import com.codepath.michfeng.songswiper.models.Post;
+import com.codepath.michfeng.songswiper.runnables.RunnablePlaylist;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -33,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
-import spotify.models.generic.AbstractPlayableObject;
 import spotify.models.playlists.PlaylistTrack;
 
 /**

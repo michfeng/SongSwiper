@@ -1,11 +1,8 @@
 package com.codepath.michfeng.songswiper.activities;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,34 +14,22 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.UserService;
-import com.codepath.michfeng.songswiper.models.Artist;
 import com.codepath.michfeng.songswiper.models.SpotifyUser;
-import com.codepath.michfeng.songswiper.models.Track;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.saksham.customloadingdialog.LoaderKt;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
-import spotify.api.authorization.AuthorizationCodeFlowPKCE;
-import spotify.api.authorization.AuthorizationRefreshToken;
-import spotify.api.enums.AuthorizationScope;
-import spotify.models.artists.ArtistFull;
-import spotify.models.paging.Paging;
+import spotify.models.artists.ArtistSimplified;
 import spotify.models.tracks.TrackFull;
-import spotify.models.tracks.TrackSimplified;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -76,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         btnAuthenticate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoaderKt.showDialog(LoginActivity.this, true, R.raw.lottie);
+                // LoaderKt.showDialog(LoginActivity.this, true, R.raw.lottie);
                 authenticateSpotify();
             }
         });
@@ -164,12 +149,15 @@ public class LoginActivity extends AppCompatActivity {
         } catch (ParseException e) {
         // Signing up threw an exception, so they may already exist in database, so we try logging in.
             logInUser(id);
+            ParseUser newUser = ParseUser.getCurrentUser();
         }
 
         // Goes to SwipeActivity once authentication is done.
+        Log.i(TAG, "starting loading screen");
+        LoaderKt.showDialog(this, true, R.raw.lottie);
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        i.putExtra("accessToken",accessToken);
-        Log.i(TAG,"Access token: "+accessToken);
+        i.putExtra("accessToken", accessToken);
+        Log.i(TAG,"Access token: " + accessToken);
         startActivity(i);
     }
 
@@ -178,15 +166,11 @@ public class LoginActivity extends AppCompatActivity {
         ParseUser.logInInBackground(id, "password", new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
+                Log.i(TAG, "done with log in");
                 if (e != null) {
                     Log.e(TAG, "Issue with login", e);
                     Toast.makeText(LoginActivity.this, "Invalid login", Toast.LENGTH_SHORT).show();
                     return;
-                } else {
-                    ParseUser newUser = ParseUser.getCurrentUser();
-                    newUser.put("likedTracks", new LinkedList<TrackSimplified>());
-                    newUser.put("likedArtists", new LinkedList<ArtistFull>());
-                    newUser.put("likedGenres", new LinkedList<String>());
                 }
             }
         });
@@ -200,9 +184,26 @@ public class LoginActivity extends AppCompatActivity {
         newUser.setUsername(id);
         newUser.setPassword("password");
 
-        newUser.put("likedTracks", new LinkedList<TrackSimplified>());
-        newUser.put("likedArtists", new LinkedList<ArtistFull>());
-        newUser.put("likedGenres", new LinkedList<String>());
+        ParseObject likedObjects = new ParseObject("LikedObjects");
+
+        likedObjects.put("likedTracks", new LinkedList<TrackFull>());
+        likedObjects.put("likedArtists", new LinkedList<ArtistSimplified>());
+        likedObjects.put("likedGenres", new LinkedList<String>());
+
+        likedObjects.put("user", newUser.getObjectId());
+
+        Log.i(TAG, "checkpoint");
+
+        likedObjects.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                Log.i(TAG, "successful save");
+                if (e != null) {
+                    Log.i(TAG, "error saving: " + e.getStackTrace());
+                    e.printStackTrace();
+                }
+            }
+        });
 
         newUser.signUpInBackground();
     }

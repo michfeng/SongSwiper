@@ -13,13 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
-import com.codepath.michfeng.songswiper.models.Post;
-import com.codepath.michfeng.songswiper.models.Track;
+import com.codepath.michfeng.songswiper.runnables.RunnableImage;
 
 import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
-import spotify.models.generic.AbstractPlayableObject;
 import spotify.models.playlists.PlaylistTrack;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {

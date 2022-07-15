@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/ivProfile"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
@@ -33,6 +33,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/userSince"
         android:layout_marginTop="0dp"
+        android:padding="20dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
 
     <TextView

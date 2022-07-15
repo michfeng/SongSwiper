@@ -15,10 +15,12 @@ import android.view.ViewGroup;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.activities.LikedActivity;
-import com.codepath.michfeng.songswiper.connectors.RunnableImage;
-import com.codepath.michfeng.songswiper.connectors.RunnableRecs;
+import com.codepath.michfeng.songswiper.runnables.RunnableImage;
+import com.codepath.michfeng.songswiper.runnables.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.parse.Parse;
+import com.parse.ParseUser;
 import com.saksham.customloadingdialog.LoaderKt;
 
 import org.parceler.Parcels;
@@ -28,7 +30,6 @@ import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
 import spotify.models.recommendations.RecommendationCollection;
-import spotify.models.tracks.TrackLink;
 import spotify.models.tracks.TrackSimplified;
 
 /**
@@ -97,18 +98,23 @@ public class SwipeFragment extends Fragment {
 
         SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
-        RunnableRecs r = new RunnableRecs(spotifyApi, getContext());
+        Log.i(TAG, "" + ParseUser.getCurrentUser().get("likedTracks"));
+
+        RunnableRecs r = new RunnableRecs(spotifyApi, getContext(), ParseUser.getCurrentUser());
+        Log.i(TAG, "checkpoint 1");
 
         // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
         Thread thread = new Thread(r);
         thread.setName("r");
         thread.start();
         try {
+            Log.i(TAG, "checkpoint 2");
             recommendations = r.getRecs();
+            Log.i(TAG,"recommended tracks: " + recommendations);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
+        //Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
 
         for (TrackSimplified rec : recommendations.getTracks()) {
             // Check whether this song is playable in user's market.
@@ -118,7 +124,7 @@ public class SwipeFragment extends Fragment {
                     Log.i(TAG, "null images");
 
                 Card c = new Card();
-                c.setTrack(rec);
+                c.setId(rec.getId());
                 c.setTrackName(rec.getName());
                 c.setArtistName(rec.getArtists().get(0).getName());
                 c.setUri(rec.getUri());
@@ -129,14 +135,23 @@ public class SwipeFragment extends Fragment {
                 threadImage.setName("runImage");
                 threadImage.start();
                 try {
-                    c.setCoverImagePath(runImage.getImage().getUrl());
+                    if (runImage.getImage() != null)
+                        c.setCoverImagePath(runImage.getImage().getUrl());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
                 cards.add(c);
+                /* cards.add(0, new Card()); */
            //}
         }
+
+        viewpager.post(new Runnable() {
+            @Override
+            public void run() {
+                viewpager.setCurrentItem(1, true);
+            }
+        });
 
         adapter.notifyDataSetChanged();
 
@@ -152,6 +167,11 @@ public class SwipeFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+
+                // Record that current user has swiped for user statistics.
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                currentUser.put("numSwiped", currentUser.getInt("numSwiped") + 1);
+                currentUser.saveInBackground();
 
                 // If the new position is to the left of old position.
                 // Therefore swipe right action (like) has taken place.
@@ -178,6 +198,10 @@ public class SwipeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        /* Log.i(TAG, "starting loading screen");
+        LoaderKt.showDialog(getContext(), true, R.raw.lottie);*/
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_swipe, container, false);
     }

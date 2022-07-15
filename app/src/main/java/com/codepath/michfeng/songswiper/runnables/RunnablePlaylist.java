@@ -1,4 +1,4 @@
-package com.codepath.michfeng.songswiper.connectors;
+package com.codepath.michfeng.songswiper.runnables;
 
 import android.util.Log;
 import android.widget.Toast;

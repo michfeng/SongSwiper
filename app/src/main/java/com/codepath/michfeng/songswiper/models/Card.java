@@ -13,18 +13,18 @@ public class Card {
     public String artistImagePath;
     public String preview;
     public String uri;
-    public TrackSimplified track;
+    public String id;
 
     public Card() {}
 
-    public Card (String trackname, String artist, String coverIm, String artistIm, String preview, String uri, TrackSimplified track) {
+    public Card (String trackname, String artist, String coverIm, String artistIm, String preview, String uri, String id) {
         this.trackName = trackname;
         this.artistName = artist;
         this.coverImagePath = coverIm;
         this.artistImagePath = artistIm;
         this.preview = preview;
         this.uri = uri;
-        this.track = track;
+        this.id = id;
     }
 
     public String getArtistImagePath() {
@@ -71,11 +71,11 @@ public class Card {
 
     public void setUri(String uri) { this.uri = uri; }
 
-    public TrackSimplified getTrack() {
-        return track;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setTrack(TrackSimplified track) {
-        this.track = track;
+    public String getId() {
+        return id;
     }
 }

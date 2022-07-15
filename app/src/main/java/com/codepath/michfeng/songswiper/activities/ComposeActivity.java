@@ -20,6 +20,7 @@ import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.codepath.michfeng.songswiper.models.Post;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -77,6 +78,7 @@ public class ComposeActivity extends AppCompatActivity {
         post.setUser(user);
         post.setImage(photoUrl);
         post.setUri(uri);
+        Log.i(TAG, "likes " + post.getLikes());
 
         post.saveInBackground(new SaveCallback() {
             @Override

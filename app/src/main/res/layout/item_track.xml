@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/ivTrackCover"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="0dp"
         tools:srcCompat="@tools:sample/avatars" />
@@ -17,9 +17,12 @@
         android:id="@+id/tvSongTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="22dp"
         android:layout_toEndOf="@+id/ivTrackCover"
-        android:textSize="20sp"
+        android:textSize="16sp"
         tools:text="Song title" />
 
     <TextView
@@ -27,8 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvSongTitle"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="159dp"
+        android:layout_marginTop="-7dp"
         android:layout_toEndOf="@+id/ivTrackCover"
         tools:text="Song artist" />
 </RelativeLayout>

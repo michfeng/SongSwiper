@@ -1,7 +1,5 @@
 package com.codepath.michfeng.songswiper.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,29 +13,30 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
-import com.codepath.michfeng.songswiper.connectors.RunnableGenre;
-import com.codepath.michfeng.songswiper.models.Artist;
-import com.codepath.michfeng.songswiper.models.Card;
 import com.codepath.michfeng.songswiper.models.Track;
+import com.codepath.michfeng.songswiper.runnables.RunnableLiked;
+import com.codepath.michfeng.songswiper.models.Card;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import spotify.api.spotify.SpotifyApi;
 import spotify.models.artists.ArtistFull;
-import spotify.models.paging.Paging;
-import spotify.models.playlists.PlaylistFull;
+import spotify.models.artists.ArtistSimplified;
 import spotify.models.playlists.PlaylistSimplified;
 import spotify.models.playlists.requests.CreateUpdatePlaylistRequestBody;
+import spotify.models.tracks.TrackFull;
 import spotify.models.tracks.TrackSimplified;
 
 public class LikedActivity extends AppCompatActivity {
@@ -73,25 +72,69 @@ public class LikedActivity extends AppCompatActivity {
             Glide.with(this).load(card.getCoverImagePath()).into(ivAlbum);
         }
 
-        // Add liked song, genre, and artist to their respective artist.
+        // Add liked song, genre, and artist to their respective queues stored in user.
+        // Query for LikedObjects object corresponding to user.
         ParseUser currentUser = ParseUser.getCurrentUser();
-        Queue<TrackSimplified> likedTracks = (LinkedList<TrackSimplified>) currentUser.get("likedTracks");
-        Queue<ArtistFull> likedArtists = (LinkedList<ArtistFull>) currentUser.get("likedArtists");
-        Queue<String> likedGenres = (LinkedList<String>) currentUser.get("likedGenres");
 
-        likedTracks.add(card.getTrack());
-        likedArtists.add(card.getTrack().getArtists().get(0));
+        final Queue<TrackFull>[] likedTracksQ = new Queue[]{new LinkedList<TrackFull>()};
+        final Queue<ArtistSimplified>[] likedArtistsQ = new Queue[]{new LinkedList<ArtistSimplified>()};
+        final Queue<String>[] likedGenresQ = new Queue[]{new LinkedList<String>()};
 
-        RunnableGenre runG = new RunnableGenre(new SpotifyApi(accessToken), card.getTrack().getId());
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
+        query.whereEqualTo("user", currentUser.getObjectId());
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    // No exception, so we have successfully found corresponding LikedObjects for user.
+                    // Note that there should only be one row corresponding to each user, so we only
+                    // need to retrieve the first out of this returned list.
+                    ParseObject obj = objects.get(0);
+
+                    likedTracksQ[0] = (LinkedList<TrackFull>) currentUser.get("likedTracks");
+                    likedArtistsQ[0] = (LinkedList<ArtistSimplified>) currentUser.get("likedArtists");
+                    likedGenresQ[0] = (LinkedList<String>) currentUser.get("likedGenres");
+                } else {
+                    Log.e(TAG, "error in query: " + e.getStackTrace());
+                }
+            }
+        });
+
+        Queue<TrackFull> likedTracks = likedTracksQ[0];
+        Queue<ArtistSimplified> likedArtists = likedArtistsQ[0];
+        Queue<String> likedGenres = likedGenresQ[0];
+
+        RunnableLiked runG = new RunnableLiked(new SpotifyApi(accessToken), card.getId());
         Thread thread = new Thread(runG);
         thread.setName("runG");
         thread.start();
         try {
             likedGenres.addAll(runG.getGenres());
+            likedTracks.add(runG.getTrack());
+            likedArtists.addAll(runG.getArtists());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        ParseObject obj = new ParseObject("LikedObjects");
+        obj.put("likedTracks", likedTracks);
+        obj.put("likedArtists", likedArtists);
+        obj.put("likedGenres", likedGenres);
+        obj.put("user", currentUser.getObjectId());
+
+        obj.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.e(TAG, "error saving object: " + e.getStackTrace());
+                }
+            }
+        });
+
+        // Record that current user has liked a new song for user statistics.
+        currentUser.put("numLiked", currentUser.getInt("numLiked") + 1);
+        currentUser.saveInBackground();
 
         // Handle click event to share liked song.
         share.setOnClickListener(new View.OnClickListener() {

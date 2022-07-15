@@ -13,16 +13,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.PostsAdapter;
 import com.codepath.michfeng.songswiper.models.Post;
+import com.codepath.michfeng.songswiper.runnables.RunnableImage;
+import com.codepath.michfeng.songswiper.runnables.RunnableSort;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import spotify.api.spotify.SpotifyApi;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +44,8 @@ public class FeedFragment extends Fragment {
     private RecyclerView rvFeed;
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
+    private Button btnSort;
+    private String accessToken;
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -80,9 +87,10 @@ public class FeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String accessToken = getArguments().getString("accessToken");
+        accessToken = getArguments().getString("accessToken");
 
         rvFeed = view.findViewById(R.id.rvFeed);
+        btnSort = view.findViewById(R.id.btnSort);
 
         // Initialize list that holds posts.
         allPosts = new ArrayList<>();
@@ -110,6 +118,17 @@ public class FeedFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sortPosts();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         queryPosts();
     }
@@ -150,5 +169,17 @@ public class FeedFragment extends Fragment {
         adapter.clear();
         queryPosts();
         swipeContainer.setRefreshing(false);
+    }
+
+    private void sortPosts() throws InterruptedException {
+
+        RunnableSort run = new RunnableSort(new SpotifyApi(accessToken), allPosts);
+        Thread thread = new Thread(run);
+        thread.setName("run");
+        thread.start();
+
+        allPosts.clear();
+        allPosts.addAll(run.getSorted());
+        adapter.notifyDataSetChanged();
     }
 }

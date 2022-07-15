@@ -1,4 +1,4 @@
-package com.codepath.michfeng.songswiper.connectors;
+package com.codepath.michfeng.songswiper.runnables;
 
 import android.util.Log;
 
@@ -14,15 +14,17 @@ import spotify.models.playlists.PlaylistSimplified;
 import spotify.models.playlists.PlaylistTrack;
 import spotify.models.tracks.TrackFull;
 
-public class RunnableGenre implements Runnable{
+public class RunnableLiked implements Runnable{
     List<String> genres;
     SpotifyApi spotifyApi;
     String id;
+    TrackFull track;
+    List<ArtistSimplified> artists;
 
     private volatile boolean finish;
-    private static final String TAG = "RunnableGenre";
+    private static final String TAG = "RunnableLiked";
 
-    public RunnableGenre(SpotifyApi api, String id) {
+    public RunnableLiked(SpotifyApi api, String id) {
         this.id = id;
         this.spotifyApi = api;
     }
@@ -31,12 +33,13 @@ public class RunnableGenre implements Runnable{
     public void run() {
 
         genres = new ArrayList<String>();
-        TrackFull track = spotifyApi.getTrack(id, new HashMap<>());
+        track = spotifyApi.getTrack(id, new HashMap<>());
         for (ArtistSimplified artistSimplified : track.getArtists()) {
             ArtistFull artist = spotifyApi.getArtist(artistSimplified.getId());
             genres.addAll(artist.getGenres());
         }
 
+        artists = track.getArtists();
         finish = true;
 
         synchronized (this) {
@@ -51,5 +54,23 @@ public class RunnableGenre implements Runnable{
         }
 
         return genres;
+    }
+
+    public TrackFull getTrack() throws InterruptedException {
+        synchronized (this) {
+            if (!finish)
+                this.wait();
+        }
+
+        return track;
+    }
+
+    public List<ArtistSimplified> getArtists() throws InterruptedException {
+        synchronized (this) {
+            if (!finish)
+                this.wait();
+        }
+
+        return artists;
     }
 }
