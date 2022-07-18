@@ -19,7 +19,11 @@ import com.codepath.michfeng.songswiper.runnables.RunnableImage;
 import com.codepath.michfeng.songswiper.runnables.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.parse.GetCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.saksham.customloadingdialog.LoaderKt;
 
@@ -96,55 +100,76 @@ public class SwipeFragment extends Fragment {
 
         // Start loading screen.
 
-        SpotifyApi spotifyApi = new SpotifyApi(accessToken);
+        ParseUser user = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
+        Log.i(TAG, "currentId " + user.getString("likedObjectsId"));
+        query.getInBackground(user.getString("likedObjectsId"), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject obj, ParseException e) {
+                        if (e == null) {
+                            // No exception, so we have successfully found corresponding LikedObjects for user.
+                            // Note that there should only be one row corresponding to each user, so we only
+                            // need to retrieve the first out of this returned list.
 
-        Log.i(TAG, "" + ParseUser.getCurrentUser().get("likedTracks"));
+                            SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
-        RunnableRecs r = new RunnableRecs(spotifyApi, getContext(), ParseUser.getCurrentUser());
-        Log.i(TAG, "checkpoint 1");
+                            // Get liked objects from retrieved ParseObject.
+                            List<String> likedTracks = (ArrayList<String>) obj.get("likedTracks");
+                            List<String> likedArtists = (ArrayList<String>) obj.get("likedArtists");
+                            List<String> likedGenres = (ArrayList<String>) obj.get("likedGenres");
 
-        // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
-        Thread thread = new Thread(r);
-        thread.setName("r");
-        thread.start();
-        try {
-            Log.i(TAG, "checkpoint 2");
-            recommendations = r.getRecs();
-            Log.i(TAG,"recommended tracks: " + recommendations);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
+                            RunnableRecs r = new RunnableRecs(spotifyApi, getContext(), ParseUser.getCurrentUser(),
+                                    likedTracks, likedArtists, likedGenres);
+                            Log.i(TAG, "checkpoint 1");
 
-        for (TrackSimplified rec : recommendations.getTracks()) {
-            // Check whether this song is playable in user's market.
-            //if (rec.isPlayable()) {
-                Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
-                if (rec.getArtists().get(0).getImages() == null)
-                    Log.i(TAG, "null images");
+                            // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
+                            Thread thread = new Thread(r);
+                            thread.setName("r");
+                            thread.start();
+                            try {
+                                Log.i(TAG, "checkpoint 2");
+                                recommendations = r.getRecs();
+                                Log.i(TAG,"recommended tracks: " + recommendations);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                            //Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
 
-                Card c = new Card();
-                c.setId(rec.getId());
-                c.setTrackName(rec.getName());
-                c.setArtistName(rec.getArtists().get(0).getName());
-                c.setUri(rec.getUri());
-                c.setPreview(rec.getPreviewUrl());
+                            for (TrackSimplified rec : recommendations.getTracks()) {
+                                // Check whether this song is playable in user's market.
 
-                RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
-                Thread threadImage = new Thread(runImage);
-                threadImage.setName("runImage");
-                threadImage.start();
-                try {
-                    if (runImage.getImage() != null)
-                        c.setCoverImagePath(runImage.getImage().getUrl());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                                Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
+                                if (rec.getArtists().get(0).getImages() == null)
+                                    Log.i(TAG, "null images");
 
-                cards.add(c);
-                /* cards.add(0, new Card()); */
-           //}
-        }
+                                Card c = new Card();
+                                c.setId(rec.getId());
+                                c.setTrackName(rec.getName());
+                                c.setArtistName(rec.getArtists().get(0).getName());
+                                c.setUri(rec.getUri());
+                                c.setPreview(rec.getPreviewUrl());
+
+                                RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
+                                Thread threadImage = new Thread(runImage);
+                                threadImage.setName("runImage");
+                                threadImage.start();
+                                try {
+                                    if (runImage.getImage() != null)
+                                        c.setCoverImagePath(runImage.getImage().getUrl());
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+
+                                cards.add(c);
+
+
+                            }
+
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
 
         viewpager.post(new Runnable() {
             @Override
@@ -153,7 +178,6 @@ public class SwipeFragment extends Fragment {
             }
         });
 
-        adapter.notifyDataSetChanged();
 
         // To get swipe event of viewpager2.
         viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -198,10 +222,6 @@ public class SwipeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        /* Log.i(TAG, "starting loading screen");
-        LoaderKt.showDialog(getContext(), true, R.raw.lottie);*/
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_swipe, container, false);
     }

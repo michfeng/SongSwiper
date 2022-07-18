@@ -46,6 +46,7 @@ public class ProfileFragment extends Fragment {
     protected PlaylistAdapter adapter;
     private BottomNavigationView bottomNavigationView;
     private TextView userSince;
+    private TextView tvStats;
 
     private static final String TAG = "ProfileFragment";
 
@@ -88,12 +89,16 @@ public class ProfileFragment extends Fragment {
         playlistViewer = view.findViewById(R.id.playlistViewer);
         userSince = view.findViewById(R.id.userSince);
         currentUser = ParseUser.getCurrentUser();
+        tvStats = view.findViewById(R.id.tvStats);
 
         tvName.setText(currentUser.getUsername());
 
         Date date = currentUser.getCreatedAt();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("LLLL dd, yyyy");
         userSince.setText("User since " + simpleDateFormat.format(date).toString());
+
+        String stats = "" + currentUser.getInt("numLiked") + " liked songs out of " + currentUser.getInt("numSwiped") + " swiped tracks";
+        tvStats.setText(stats);
 
         ParseFile image = currentUser.getParseFile("profilePicture");
         if (image != null) {

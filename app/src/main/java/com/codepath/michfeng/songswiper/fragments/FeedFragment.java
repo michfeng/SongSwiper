@@ -43,7 +43,7 @@ public class FeedFragment extends Fragment {
 
     private RecyclerView rvFeed;
     protected PostsAdapter adapter;
-    protected List<Post> allPosts;
+    private List<Post> allPosts;
     private Button btnSort;
     private String accessToken;
 
@@ -119,6 +119,8 @@ public class FeedFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        queryPosts();
+
         btnSort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,8 +131,6 @@ public class FeedFragment extends Fragment {
                 }
             }
         });
-
-        queryPosts();
     }
 
     private void queryPosts() {
@@ -155,7 +155,7 @@ public class FeedFragment extends Fragment {
                     return;
                 }
                 for (Post post : posts) {
-                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                   // Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
                 }
 
                 // Save received posts.
@@ -173,13 +173,24 @@ public class FeedFragment extends Fragment {
 
     private void sortPosts() throws InterruptedException {
 
-        RunnableSort run = new RunnableSort(new SpotifyApi(accessToken), allPosts);
+        queryPosts();
+
+        Log.i(TAG, "before sorting: " + allPosts.toString());
+
+        Log.i(TAG, "allPosts size: " + allPosts.size());
+        List<Post> newPosts = new ArrayList<>();
+        newPosts.addAll(allPosts);
+
+        RunnableSort run = new RunnableSort(new SpotifyApi(accessToken), newPosts);
         Thread thread = new Thread(run);
         thread.setName("run");
         thread.start();
 
         allPosts.clear();
         allPosts.addAll(run.getSorted());
+
+        Log.i(TAG, "after sorting: " + run.getSorted());
+
         adapter.notifyDataSetChanged();
     }
 }

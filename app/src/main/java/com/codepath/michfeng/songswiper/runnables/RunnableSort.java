@@ -31,6 +31,7 @@ public class RunnableSort implements Runnable {
     private static final String TAG = "RunnableSort";
 
     public RunnableSort(SpotifyApi api, List<Post> posts) {
+        Log.i(TAG, "making posts with size " + posts.size());
         this.posts = posts;
         this.spotifyApi = api;
     }
@@ -38,12 +39,12 @@ public class RunnableSort implements Runnable {
     @Override
     public void run() {
 
+        Log.i(TAG, "posts size: " + posts.size());
+
         List<String> ids = new ArrayList<>();
         for (Post p : posts) {
             ids.add(p.getId());
         }
-
-
 
         // Limit number of top items to 5.
         Map<String, String> options = new HashMap<>();
@@ -57,9 +58,15 @@ public class RunnableSort implements Runnable {
             topIds.add(t.getId());
         }
 
+        Log.i(TAG, "top IDs: " + topIds.toString());
+        Log.i(TAG, "IDs: " + ids.toString());
+
         // Gets features of respective tracks.
         List<AudioFeatures> postsFeatures = spotifyApi.getTracksAudioFeatures(ids).getAudioFeatures();
         List<AudioFeatures> topFeatures = spotifyApi.getTracksAudioFeatures(topIds).getAudioFeatures();
+
+        Log.i(TAG, "postsFeatures: " + postsFeatures.toString());
+        Log.i(TAG, "topFeatures: " + topFeatures.toString());
 
         // Returns average audio features of user's top tracks.
         AudioFeatures average = getAverage(topFeatures);
@@ -67,12 +74,20 @@ public class RunnableSort implements Runnable {
         // Stores the score for each post track.
         Map<Post, Float> scores = new HashMap<Post, Float>();
 
+        Log.i(TAG, "posts size: " + posts.size());
+        Log.i(TAG, "postFeatures size: " + postsFeatures.size());
+        // Log.i(TAG, " size: " + posts.size());
+
         for (int i = 0; i < postsFeatures.size(); i++) {
-            scores.put(posts.get(i), getScore(postsFeatures.get(i), average));
+            if (postsFeatures.get(i) != null) {
+                scores.put(posts.get(i), getScore(postsFeatures.get(i), average));
+                Log.i(TAG, "nonull audio");
+            }
         }
 
         scores = sort(scores);
         sorted = new ArrayList<>(scores.keySet());
+        Log.i(TAG, sorted.toString());
 
         finish = true;
 

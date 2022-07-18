@@ -39,6 +39,7 @@ public class ComposeActivity extends AppCompatActivity {
     private ParseUser currentUser;
     private String photoPath;
     private String uri;
+    private String id;
 
     private final static String TAG = "ComposeActivity";
 
@@ -51,6 +52,7 @@ public class ComposeActivity extends AppCompatActivity {
         post = (Button) findViewById(R.id.btnPost);
         currentUser = ParseUser.getCurrentUser();
         uri = getIntent().getStringExtra("uri");
+        id = getIntent().getStringExtra("id");
         Log.i(TAG, uri);
 
         photoPath = getIntent().getStringExtra("image");
@@ -67,17 +69,18 @@ public class ComposeActivity extends AppCompatActivity {
                 }
 
                 // Save post through outer method.
-                savePost(description, currentUser, photoPath, uri);
+                savePost(description, currentUser, photoPath, uri, id);
             }
         });
     }
 
-    private void savePost(String description, ParseUser user, String photoUrl, String uri)  {
+    private void savePost(String description, ParseUser user, String photoUrl, String uri, String id)  {
         Post post = new Post();
         post.setCaption(description);
         post.setUser(user);
         post.setImage(photoUrl);
         post.setUri(uri);
+        post.setId(id);
         Log.i(TAG, "likes " + post.getLikes());
 
         post.saveInBackground(new SaveCallback() {
@@ -87,8 +90,9 @@ public class ComposeActivity extends AppCompatActivity {
                 if (e != null) {
                     Log.e(TAG, "Error while saving", e);
                     Toast.makeText(ComposeActivity.this, "Error while saving!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i(TAG, "Post save was successful");
                 }
-                Log.i(TAG, "Post save was successful");
 
                 // Redirect back to swiping.
                 Intent intent = new Intent(ComposeActivity.this, MainActivity.class);
