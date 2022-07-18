@@ -148,31 +148,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (ParseException e) {
         // Signing up threw an exception, so they may already exist in database, so we try logging in.
             logInUser(id);
-            /*ParseUser newUser = ParseUser.getCurrentUser();
-
-            ParseObject likedObjects = new ParseObject("LikedObjects");
-
-            likedObjects.put("likedTracks", new LinkedList<String>());
-            likedObjects.put("likedArtists", new LinkedList<String>());
-            likedObjects.put("likedGenres", new LinkedList<String>());
-            likedObjects.put("user", newUser);
-
-            Log.i(TAG, "checkpoint");
-
-            likedObjects.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e != null) {
-                        Log.i(TAG, "error saving: " + e.getStackTrace());
-                        e.printStackTrace();
-                    } else {
-                        Log.i(TAG, "successful save");
-                        Log.i(TAG, "object id: " + likedObjects.getObjectId());
-                        newUser.put("likedObjectsId", likedObjects.getObjectId());
-                        newUser.saveInBackground();
-                    }
-                }
-            });*/
         }
 
         // Goes to SwipeActivity once authentication is done.
