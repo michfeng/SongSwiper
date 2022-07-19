@@ -21,7 +21,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="21dp"
         android:layout_marginTop="22dp"
-        android:layout_marginEnd="206dp"
+        android:layout_marginEnd="0dp"
         android:layout_toStartOf="@+id/ivPlayProf"
         android:layout_toEndOf="@+id/ivTrackCover"
         android:textSize="16sp"

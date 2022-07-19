@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import spotify.api.spotify.SpotifyApi;
 import spotify.models.audio.AudioFeatures;
@@ -72,7 +73,7 @@ public class RunnableSort implements Runnable {
         AudioFeatures average = getAverage(topFeatures);
 
         // Stores the score for each post track.
-        Map<Post, Float> scores = new HashMap<Post, Float>();
+        Map<Float, Post> scores = new TreeMap<Float, Post>();
 
         Log.i(TAG, "posts size: " + posts.size());
         Log.i(TAG, "postFeatures size: " + postsFeatures.size());
@@ -80,41 +81,29 @@ public class RunnableSort implements Runnable {
 
         for (int i = 0; i < postsFeatures.size(); i++) {
             if (postsFeatures.get(i) != null) {
-                scores.put(posts.get(i), getScore(postsFeatures.get(i), average));
-                Log.i(TAG, "nonull audio");
+                PostScore p = new PostScore(posts.get(i), getScore(postsFeatures.get(i), average));
+                float score = getScore(postsFeatures.get(i), average);
+                Log.i(TAG, "Post " + posts.get(i).getCaption() + " score: " + score);
+                scores.put(getScore(postsFeatures.get(i), average), posts.get(i));
             }
         }
 
-        scores = sort(scores);
-        sorted = new ArrayList<>(scores.keySet());
+        for (Map.Entry<Float, Post> e : scores.entrySet()) {
+            Log.i(TAG, "" + e.getKey() + " " + e.getValue().getCaption());
+        }
+
+        sorted = new ArrayList<>(scores.values());
         Log.i(TAG, sorted.toString());
+
+        for (Post p : sorted) {
+            Log.i(TAG, p.getCaption());
+        }
 
         finish = true;
 
         synchronized (this) {
             this.notify();
         }
-    }
-
-    // Sort Map according to value in ascending order.
-    private Map<Post, Float> sort(Map<Post, Float> scores) {
-        List<Map.Entry<Post, Float> > list = new LinkedList<Map.Entry<Post, Float> > ((Collection) scores.entrySet());
-
-        // Use Collections class built in methods to sort.
-        Collections.sort(list, new Comparator<Map.Entry<Post, Float> >() {
-            public int compare(Map.Entry<Post, Float> o1, Map.Entry<Post, Float> o2)
-            {
-                return (o1.getValue()).compareTo(o2.getValue());
-            }
-        });
-
-        // Put sorted data into Hashmap.
-        Map<Post, Float> sortedMap = new HashMap<Post, Float>();
-        for (Map.Entry<Post, Float> entry : list) {
-            sortedMap.put(entry.getKey(), entry.getValue());
-        }
-
-        return sortedMap;
     }
 
     public List<Post> getSorted() throws InterruptedException {
@@ -180,5 +169,38 @@ public class RunnableSort implements Runnable {
 
         // The lower the score, the closer the track is to user's taste.
         return score;
+    }
+
+    public class PostScore implements Comparable {
+
+        Post post;
+        float score;
+
+        public PostScore (Post p, float s) {
+            this.post = p;
+            this.score = s;
+        }
+
+        public float getScore() {
+            return score;
+        }
+
+        public void setScore(float score) {
+            this.score = score;
+        }
+
+        public void setPost(Post post) {
+            this.post = post;
+        }
+
+        public Post getPost() {
+            return post;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            PostScore ps = (PostScore) o;
+            return Float.compare(this.score, ps.getScore());
+        }
     }
 }

@@ -189,7 +189,7 @@ public class FeedFragment extends Fragment {
 
     private void sortPosts() throws InterruptedException {
 
-        queryPosts();
+        // queryPosts();
 
         Log.i(TAG, "before sorting: " + allPosts.toString());
 
@@ -204,6 +204,10 @@ public class FeedFragment extends Fragment {
 
         allPosts.clear();
         allPosts.addAll(run.getSorted());
+
+        for (Post p : allPosts) {
+            Log.i(TAG, p.getCaption());
+        }
 
         Log.i(TAG, "after sorting: " + run.getSorted());
 
