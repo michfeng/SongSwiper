@@ -5,12 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.models.Post;
+
+import java.util.ArrayList;
+
+import spotify.api.spotify.SpotifyApi;
+import spotify.models.players.requests.ChangePlaybackStateRequestBody;
 
 public class PostDetailsActivity extends AppCompatActivity {
 
@@ -19,6 +25,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     private ImageView ivAlbum;
     private TextView tvCaption;
     private TextView date;
+    private ImageView btnPlay;
 
     private static final String TAG = "PostDetailsActivity";
 
@@ -35,6 +42,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         ivAlbum = findViewById(R.id.ivDetailsAlbum);
         tvCaption = findViewById(R.id.tvDetailsCaption);
         date = findViewById(R.id.date);
+        btnPlay = findViewById(R.id.ivPlayDetails);
 
         Post post = getIntent().getParcelableExtra("post");
 
@@ -44,5 +52,33 @@ public class PostDetailsActivity extends AppCompatActivity {
 
         Glide.with(this).load(post.getUser().getParseFile("profilePicture").getUrl()).circleCrop().into(ivUser);
         Glide.with(this).load(post.getImage()).into(ivAlbum);
+
+        // Handle click for play button.
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String accessToken = getIntent().getStringExtra("accessToken");
+                        Log.i(TAG, "accessToken: " + accessToken);
+
+                        SpotifyApi api = new SpotifyApi(accessToken);
+
+                        // Context to play in (can be playlist/album/artist). Here we want the album of the track.
+                        ArrayList<String> uris = new ArrayList<>();
+                        Log.i(TAG, "uri: " + post.getUri());
+                        Log.i(TAG, "uri size" + uris.size());
+                        uris.add(post.getUri());
+
+                        ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
+                        body.setUris(uris);
+
+                        api.changePlaybackState(body);
+                    }
+                });
+                thread.start();
+            }
+        });
     }
 }

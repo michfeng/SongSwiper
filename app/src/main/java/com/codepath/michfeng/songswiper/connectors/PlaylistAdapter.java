@@ -1,6 +1,7 @@
 package com.codepath.michfeng.songswiper.connectors;
 
 import android.content.Context;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +16,11 @@ import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.runnables.RunnableImage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
+import spotify.models.players.requests.ChangePlaybackStateRequestBody;
 import spotify.models.playlists.PlaylistTrack;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {
@@ -63,23 +66,24 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         private ImageView ivTrackCover;
         private TextView tvSongTitle;
         private TextView tvSongArtist;
+        private ImageView btnPlay;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivTrackCover = itemView.findViewById(R.id.ivTrackCover);
             tvSongArtist = itemView.findViewById(R.id.tvSongArtist);
             tvSongTitle = itemView.findViewById(R.id.tvSongTitle);
+            btnPlay = itemView.findViewById(R.id.ivPlayProf);
         }
 
         public void bind(PlaylistTrack track) {
             Log.i(TAG, tvSongTitle.toString());
 
+            SpotifyApi spotifyApi = new SpotifyApi(accessToken);
+
             if (track.getTrack() != null) {
                 if (track.getTrack().getName() != null)
                     tvSongTitle.setText(track.getTrack().getName());
-
-
-                SpotifyApi spotifyApi = new SpotifyApi(accessToken);
 
                 RunnableImage runImage = new RunnableImage(spotifyApi, track.getTrack().getId());
                 Thread threadImage = new Thread(runImage);
@@ -95,6 +99,29 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                     e.printStackTrace();
                 }
             }
+
+            // Handle click for play button.
+            btnPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Context to play in (can be playlist/album/artist). Here we want the album of the track.
+                            ArrayList<String> uris = new ArrayList<>();
+                            Log.i(TAG, "uri: " + track.getTrack().getUri());
+                            Log.i(TAG, "uri size" + uris.size());
+                            uris.add(track.getTrack().getUri());
+
+                            ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
+                            body.setUris(uris);
+
+                            spotifyApi.changePlaybackState(body);
+                        }
+                    });
+                    thread.start();
+                }
+            });
         }
 
         // Add list of items, change to type used.

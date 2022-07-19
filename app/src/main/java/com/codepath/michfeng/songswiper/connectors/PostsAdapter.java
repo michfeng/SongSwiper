@@ -282,6 +282,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     // Create intent to redirect to details page.
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     intent.putExtra("post", post);
+                    intent.putExtra("accessToken", accessToken);
+                    Log.i(TAG, "accessToken: " + accessToken);
                     context.startActivity(intent);
                 }
                 return super.onSingleTapUp(e);
