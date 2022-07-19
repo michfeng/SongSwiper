@@ -20,7 +20,6 @@ import com.codepath.michfeng.songswiper.runnables.RunnableRecs;
 import com.codepath.michfeng.songswiper.connectors.ViewPager2Adapter;
 import com.codepath.michfeng.songswiper.models.Card;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;

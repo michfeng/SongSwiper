@@ -55,5 +55,5 @@ dependencies {
     annotationProcessor 'org.parceler:parceler:1.1.12'
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation "com.github.sakshampruthi:custom-loading-screen:1.16"
+    implementation 'com.github.sakshampruthi:custom-loading-screen:1.16'
 }

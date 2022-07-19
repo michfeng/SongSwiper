@@ -18,6 +18,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     private TextView tvUser;
     private ImageView ivAlbum;
     private TextView tvCaption;
+    private TextView date;
 
     private static final String TAG = "PostDetailsActivity";
 
@@ -33,11 +34,13 @@ public class PostDetailsActivity extends AppCompatActivity {
         tvUser = findViewById(R.id.tvDetailUsername);
         ivAlbum = findViewById(R.id.ivDetailsAlbum);
         tvCaption = findViewById(R.id.tvDetailsCaption);
+        date = findViewById(R.id.date);
 
         Post post = getIntent().getParcelableExtra("post");
 
         tvUser.setText(post.getUser().getUsername());
         tvCaption.setText(post.getCaption());
+        date.setText(Post.calculateTimeAgo(post.getCreatedAt()));
 
         Glide.with(this).load(post.getUser().getParseFile("profilePicture").getUrl()).circleCrop().into(ivUser);
         Glide.with(this).load(post.getImage()).into(ivAlbum);

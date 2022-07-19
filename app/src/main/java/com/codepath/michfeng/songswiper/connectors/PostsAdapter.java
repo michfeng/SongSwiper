@@ -90,6 +90,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView itemUsername;
         private LikeButton btnLike;
         private ImageView btnPlay;
+        private TextView tvDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +100,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemUsername = itemView.findViewById(R.id.itemUsername);
             btnLike = itemView.findViewById(R.id.btnLike);
             btnPlay = itemView.findViewById(R.id.playButton);
+            tvDate = itemView.findViewById(R.id.tvDate);
 
             GestureDetector mDetector = new GestureDetector(new myGestureListener());
             itemView.setOnTouchListener(new View.OnTouchListener() {
@@ -124,6 +126,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ss.setSpan(boldSpan, 0, username.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             itemDescription.setText(ss);
 
+            tvDate.setText(Post.calculateTimeAgo(post.getCreatedAt()));
 
             String image = post.getImage();
 

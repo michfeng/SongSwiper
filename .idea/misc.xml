@@ -30,6 +30,7 @@
         <entry key="app/src/main/res/menu/menu_main.xml" value="0.16822916666666668" />
         <entry key="app/src/main/res/xml/card_scene1.xml" value="0.21920289855072464" />
         <entry key="app/src/main/res/xml/card_scene2.xml" value="0.21920289855072464" />
+        <entry key="app/src/main/res/xml/fileprovider.xml" value="0.1" />
       </map>
     </option>
   </component>
