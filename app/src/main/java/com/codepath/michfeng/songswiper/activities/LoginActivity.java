@@ -3,6 +3,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,18 +18,20 @@ import com.codepath.michfeng.songswiper.connectors.UserService;
 import com.codepath.michfeng.songswiper.models.SpotifyUser;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
-import com.saksham.customloadingdialog.LoaderKt;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.HashMap;
 
-import spotify.models.artists.ArtistSimplified;
+import spotify.api.authorization.AuthorizationCodeFlowPKCE;
+import spotify.api.authorization.AuthorizationRefreshToken;
+import spotify.api.enums.AuthorizationScope;
+import spotify.models.paging.Paging;
 import spotify.models.tracks.TrackFull;
 
 
@@ -61,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
         btnAuthenticate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // LoaderKt.showDialog(LoginActivity.this, true, R.raw.lottie);
                 authenticateSpotify();
             }
         });
@@ -145,17 +147,16 @@ public class LoginActivity extends AppCompatActivity {
             newUser.setPassword("password");
 
             newUser.signUp();
+            logInUser(id);
         } catch (ParseException e) {
         // Signing up threw an exception, so they may already exist in database, so we try logging in.
             logInUser(id);
         }
 
         // Goes to SwipeActivity once authentication is done.
-        Log.i(TAG, "starting loading screen");
-        LoaderKt.showDialog(this, true, R.raw.lottie);
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        i.putExtra("accessToken", accessToken);
-        Log.i(TAG,"Access token: " + accessToken);
+        i.putExtra("accessToken",accessToken);
+        Log.i(TAG,"Access token: "+accessToken);
         startActivity(i);
     }
 
@@ -164,7 +165,6 @@ public class LoginActivity extends AppCompatActivity {
         ParseUser.logInInBackground(id, "password", new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
-                Log.i(TAG, "done with log in");
                 if (e != null) {
                     Log.e(TAG, "Issue with login", e);
                     Toast.makeText(LoginActivity.this, "Invalid login", Toast.LENGTH_SHORT).show();
@@ -183,31 +183,5 @@ public class LoginActivity extends AppCompatActivity {
         newUser.setPassword("password");
 
         newUser.signUpInBackground();
-
-        ParseObject likedObjects = new ParseObject("LikedObjects");
-
-        likedObjects.put("likedTracks", new LinkedList<String>());
-        likedObjects.put("likedArtists", new LinkedList<String>());
-        likedObjects.put("likedGenres", new LinkedList<String>());
-
-        likedObjects.put("user", newUser.getObjectId());
-
-        Log.i(TAG, "checkpoint 1");
-
-        likedObjects.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                Log.i(TAG, "successful save");
-                if (e != null) {
-                    Log.i(TAG, "error saving: " + e.getStackTrace());
-                    e.printStackTrace();
-                } else {
-                    Log.i(TAG, "successful save");
-                    Log.i(TAG, "object id: " + likedObjects.getObjectId());
-                    newUser.put("likedObjectsId", likedObjects.getObjectId());
-                    newUser.saveInBackground();
-                }
-            }
-        });
     }
 }

@@ -17,15 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SongSwiper"
         tools:targetApi="31">
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.codepath.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/fileprovider" />
-        </provider>
         <activity
             android:name=".activities.SwipeFragmentExtended"
             android:exported="false" />
@@ -43,7 +34,6 @@
         <activity
             android:name=".activities.ComposeActivity"
             android:exported="false" />
-
         <activity
             android:name="com.spotify.sdk.android.auth.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

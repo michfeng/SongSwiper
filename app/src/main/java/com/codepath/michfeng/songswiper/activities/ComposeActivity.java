@@ -20,7 +20,6 @@ import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.codepath.michfeng.songswiper.models.Post;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -38,8 +37,6 @@ public class ComposeActivity extends AppCompatActivity {
     Button post;
     private ParseUser currentUser;
     private String photoPath;
-    private String uri;
-    private String id;
 
     private final static String TAG = "ComposeActivity";
 
@@ -51,9 +48,6 @@ public class ComposeActivity extends AppCompatActivity {
         etCompose = (EditText) findViewById(R.id.etCompose);
         post = (Button) findViewById(R.id.btnPost);
         currentUser = ParseUser.getCurrentUser();
-        uri = getIntent().getStringExtra("uri");
-        id = getIntent().getStringExtra("id");
-        Log.i(TAG, uri);
 
         photoPath = getIntent().getStringExtra("image");
 
@@ -69,19 +63,16 @@ public class ComposeActivity extends AppCompatActivity {
                 }
 
                 // Save post through outer method.
-                savePost(description, currentUser, photoPath, uri, id);
+                savePost(description, currentUser, photoPath);
             }
         });
     }
 
-    private void savePost(String description, ParseUser user, String photoUrl, String uri, String id)  {
+    private void savePost(String description, ParseUser user, String photoUrl)  {
         Post post = new Post();
         post.setCaption(description);
         post.setUser(user);
         post.setImage(photoUrl);
-        post.setUri(uri);
-        post.setId(id);
-        Log.i(TAG, "likes " + post.getLikes());
 
         post.saveInBackground(new SaveCallback() {
             @Override
@@ -90,12 +81,11 @@ public class ComposeActivity extends AppCompatActivity {
                 if (e != null) {
                     Log.e(TAG, "Error while saving", e);
                     Toast.makeText(ComposeActivity.this, "Error while saving!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.i(TAG, "Post save was successful");
                 }
+                Log.i(TAG, "Post save was successful");
 
                 // Redirect back to swiping.
-                Intent intent = new Intent(ComposeActivity.this, MainActivity.class);
+                Intent intent = new Intent(ComposeActivity.this, SwipeFragmentExtended.class);
                 Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
                 intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
                 startActivity(intent);
