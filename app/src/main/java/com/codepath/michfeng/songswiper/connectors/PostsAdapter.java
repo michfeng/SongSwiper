@@ -3,11 +3,14 @@ package com.codepath.michfeng.songswiper.connectors;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.activities.PostDetailsActivity;
 import com.codepath.michfeng.songswiper.models.Post;
@@ -32,18 +37,25 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import spotify.api.spotify.SpotifyApi;
+import spotify.models.players.requests.ChangePlaybackStateRequestBody;
 
 // Binds posts to recycler view on feed.
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
     private Context context;
     private List<Post> posts;
+    private String accessToken;
 
     private static final String TAG = "PostsAdapter";
 
-    public PostsAdapter(Context context, List<Post> posts) {
+    public PostsAdapter(Context context, List<Post> posts, String accessToken) {
         this.context = context;
         this.posts = posts;
+        this.accessToken = accessToken;
     }
 
     @NonNull
@@ -64,19 +76,21 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         return posts.size();
     }
 
-    // clear all elements of recycler
+    // Clear all elements of recycler.
     public void clear() {
         posts.clear();
         notifyDataSetChanged();
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemAlbum;
         private ImageView itemProfile;
         private TextView itemDescription;
         private TextView itemUsername;
         private LikeButton btnLike;
+        private ImageView btnPlay;
+        private TextView tvDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,11 +99,22 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemDescription = itemView.findViewById(R.id.itemDescription);
             itemUsername = itemView.findViewById(R.id.itemUsername);
             btnLike = itemView.findViewById(R.id.btnLike);
+            btnPlay = itemView.findViewById(R.id.playButton);
+            tvDate = itemView.findViewById(R.id.tvDate);
+
+            GestureDetector mDetector = new GestureDetector(new myGestureListener());
+            itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return mDetector.onTouchEvent(event);
+                }
+            });
+
         }
 
 
         public void bind(Post post) {
-            // bind data to view elements
+            // Bind data to view elements.
             String username = post.getUser().getUsername();
             String caption = post.getCaption();
 
@@ -101,6 +126,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ss.setSpan(boldSpan, 0, username.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             itemDescription.setText(ss);
 
+            tvDate.setText(Post.calculateTimeAgo(post.getCreatedAt()));
 
             String image = post.getImage();
 
@@ -111,7 +137,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ParseFile prof = post.getUser().getParseFile("profilePicture");
 
             if (prof != null) {
-                Log.i(TAG, "image not null");
                 Glide.with(context).load(prof.getUrl()).circleCrop().into(itemProfile);
             }
 
@@ -119,16 +144,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ParseRelation<ParseUser> relation = post.getRelation("likes");
             ParseQuery<ParseUser> relationQuery = relation.getQuery();
 
-            relationQuery.whereEqualTo(ParseUser.KEY_OBJECT_ID, ParseUser.getCurrentUser());
+            relationQuery.whereEqualTo(ParseUser.KEY_OBJECT_ID, ParseUser.getCurrentUser().getObjectId());
+            Log.i(TAG, relationQuery.getClassName());
             relationQuery.getFirstInBackground(new GetCallback<ParseUser>() {
                 @Override
                 public void done(ParseUser object, ParseException e) {
                     if (e == null) {
                         // The current user is contained in the like relation, so the heart should be filled.
+                        Log.i(TAG, "Like button pressed");
                         btnLike.setLiked(true);
                     } else {
-                        if (e.equals(ParseException.OBJECT_NOT_FOUND))
+                        if (e.equals(ParseException.OBJECT_NOT_FOUND)){
+                            Log.i(TAG, "Like button not pressed");
                             btnLike.setLiked(false);
+                        }
                         else
                             e.printStackTrace();
                     }
@@ -167,28 +196,99 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     btnLike.setLiked(false);
                 }
             });
+
+            // Handle click for play button.
+            btnPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SpotifyApi api = new SpotifyApi(accessToken);
+
+                            // Context to play in (can be playlist/album/artist). Here we want the album of the track.
+                            ArrayList<String> uris = new ArrayList<>();
+                            Log.i(TAG, "uri: " + post.getUri());
+                            Log.i(TAG, "uri size" + uris.size());
+                            uris.add(post.getUri());
+
+                            ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
+                            body.setUris(uris);
+
+                            api.changePlaybackState(body);
+                        }
+                    });
+
+                    thread.start();
+                }
+            });
         }
 
-        // add list of items, change to type used
+        // Add list of items, change to type used
         public void addAll(List<Post> list) {
             posts.addAll(list);
             notifyDataSetChanged();
         }
 
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
+        public void onLike (View v) {
+            Post post = posts.get(getAdapterPosition());
 
-            // Make sure that position is valid.
-            if (position != RecyclerView.NO_POSITION) {
-                Post post = posts.get(position);
-                Log.i(TAG, "post: " + post.getCaption());
+            // Record that specific user has liked the post.
+            ParseRelation<ParseUser> relation = post.getRelation("likes");
+            relation.add(ParseUser.getCurrentUser());
+            try {
+                post.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
-                // Create intent to redirect to details page.
-                Intent intent = new Intent(context, PostDetailsActivity.class);
-                intent.putExtra("post", post);
-                context.startActivity(intent);
+            // Change the appearance of button to reflect (shade).
+            btnLike.setLiked(true);
+        }
+
+        // Handles types of actions on each post.
+        class myGestureListener extends GestureDetector.SimpleOnGestureListener {
+            @Override
+            // Double tap to like event.
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                Post post = posts.get(getAdapterPosition());
+
+                // Record that specific user has liked the post.
+                ParseRelation<ParseUser> relation = post.getRelation("likes");
+                relation.add(ParseUser.getCurrentUser());
+                try {
+                    post.save();
+                } catch (ParseException ex) {
+                    ex.printStackTrace();
+                }
+
+                // Change the appearance of button to reflect (shade).
+                btnLike.setLiked(true);
+                return super.onDoubleTapEvent(e);
+            }
+
+            @Override
+            // Single tap to redirect to details page.
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                int position = getAdapterPosition();
+
+                Log.i(TAG, "Saw click");
+
+                // Make sure that position is valid.
+                if (position != RecyclerView.NO_POSITION) {
+                    Post post = posts.get(position);
+                    Log.i(TAG, "post: " + post.getCaption());
+
+                    // Create intent to redirect to details page.
+                    Intent intent = new Intent(context, PostDetailsActivity.class);
+                    intent.putExtra("post", post);
+                    intent.putExtra("accessToken", accessToken);
+                    Log.i(TAG, "accessToken: " + accessToken);
+                    context.startActivity(intent);
+                }
+                return super.onSingleTapUp(e);
             }
         }
     }
+
 }

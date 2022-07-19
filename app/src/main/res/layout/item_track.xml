@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ivTrackCover"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvSongTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="206dp"
+        android:layout_toStartOf="@+id/ivPlayProf"
+        android:layout_toEndOf="@+id/ivTrackCover"
+        android:textSize="16sp"
+        tools:text="Song title" />
+
+    <TextView
+        android:id="@+id/tvSongArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvSongTitle"
+        android:layout_marginStart="159dp"
+        android:layout_marginTop="-7dp"
+        android:layout_toEndOf="@+id/ivTrackCover"
+        tools:text="Song artist" />
+
+    <ImageView
+        android:id="@+id/ivPlayProf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="20dp"
+        app:srcCompat="@android:drawable/ic_media_play" />
+</RelativeLayout>

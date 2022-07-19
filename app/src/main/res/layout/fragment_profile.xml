@@ -1,14 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="profile" />
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        tools:layout_editor_absoluteX="139dp"
+        tools:layout_editor_absoluteY="69dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/ivHover"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        tools:layout_editor_absoluteX="139dp"
+        tools:layout_editor_absoluteY="69dp"
+        tools:srcCompat="@drawable/gray" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivProfile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:textSize="24sp"
+        tools:text="Michelle Feng" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistViewer"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_below="@+id/tvStats"
+        android:layout_marginTop="20dp"
+        android:padding="20dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+
+    <TextView
+        android:id="@+id/userSince"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        tools:text="User since June 13, 2022" />
+
+    <TextView
+        android:id="@+id/tvStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userSince"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        tools:text="You've liked 13 out of 26 songs" />
+
+    <TextView
+        android:id="@+id/tvChangeProfile"
+        android:layout_width="109dp"
+        android:layout_height="53dp"
+        android:layout_alignStart="@+id/ivProfile"
+        android:layout_alignTop="@+id/ivProfile"
+        android:layout_alignEnd="@+id/ivProfile"
+        android:layout_alignBottom="@+id/ivProfile"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="20dp"
+        android:text="Change profile picture"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF" />
+
+</RelativeLayout>

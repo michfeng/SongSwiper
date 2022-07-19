@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.fragments.FeedFragment;
@@ -14,10 +17,15 @@ import com.codepath.michfeng.songswiper.fragments.ProfileFragment;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.ParseUser;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+
+import spotify.api.spotify.SpotifyApi;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+    private String accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         Bundle extras = getIntent().getExtras();
-        String accessToken = "";
         if (extras != null) {
             accessToken = extras.getString("accessToken");
+        } else {
+            accessToken = "";
         }
 
         // Defining Fragments (each represents a tab).
@@ -69,7 +78,26 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        // defaults to swipe view
+        // Defaults to swipe view.
         bottomNavigationView.setSelectedItemId(R.id.action_swipe);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle presses on action bar items.
+        if (item.getItemId() == R.id.logout) {
+            ParseUser.logOutInBackground();
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
