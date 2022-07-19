@@ -25,6 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
@@ -46,6 +47,7 @@ public class FeedFragment extends Fragment {
     private List<Post> allPosts;
     private Button btnSort;
     private String accessToken;
+    private boolean sorted; // True for sorted by recommendation, false for sorted by date.
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -88,9 +90,11 @@ public class FeedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         accessToken = getArguments().getString("accessToken");
+        sorted = false;
 
         rvFeed = view.findViewById(R.id.rvFeed);
         btnSort = view.findViewById(R.id.btnSort);
+        btnSort.setText("Sort by recommended");
 
         // Initialize list that holds posts.
         allPosts = new ArrayList<>();
@@ -121,14 +125,25 @@ public class FeedFragment extends Fragment {
 
         queryPosts();
 
+
         btnSort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    sortPosts();
+                    if (!sorted) {
+                        sortPosts();
+                        btnSort.setText("Sort by date");
+                    } else {
+                        queryPosts();
+                        btnSort.setText("Sort by recommended");
+                    }
+
+                    sorted = !sorted;
                 } catch (InterruptedException e) {
+                    Log.e("TAG", "error sorting: " + e.getMessage());
                     e.printStackTrace();
                 }
+
             }
         });
     }
@@ -159,6 +174,7 @@ public class FeedFragment extends Fragment {
                 }
 
                 // Save received posts.
+                allPosts.clear();
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
             }

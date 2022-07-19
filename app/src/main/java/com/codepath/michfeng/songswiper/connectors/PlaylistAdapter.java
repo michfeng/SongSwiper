@@ -98,30 +98,30 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                // Handle click for play button.
+                btnPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Context to play in (can be playlist/album/artist). Here we want the album of the track.
+                                ArrayList<String> uris = new ArrayList<>();
+                                Log.i(TAG, "uri: " + track.getTrack().getUri());
+                                Log.i(TAG, "uri size" + uris.size());
+                                uris.add(track.getTrack().getUri());
+
+                                ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
+                                body.setUris(uris);
+
+                                spotifyApi.changePlaybackState(body);
+                            }
+                        });
+                        thread.start();
+                    }
+                });
             }
-
-            // Handle click for play button.
-            btnPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Context to play in (can be playlist/album/artist). Here we want the album of the track.
-                            ArrayList<String> uris = new ArrayList<>();
-                            Log.i(TAG, "uri: " + track.getTrack().getUri());
-                            Log.i(TAG, "uri size" + uris.size());
-                            uris.add(track.getTrack().getUri());
-
-                            ChangePlaybackStateRequestBody body = new ChangePlaybackStateRequestBody();
-                            body.setUris(uris);
-
-                            spotifyApi.changePlaybackState(body);
-                        }
-                    });
-                    thread.start();
-                }
-            });
         }
 
         // Add list of items, change to type used.
