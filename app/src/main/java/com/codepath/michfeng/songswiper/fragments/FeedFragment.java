@@ -7,28 +7,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.connectors.PostsAdapter;
 import com.codepath.michfeng.songswiper.models.Post;
-import com.codepath.michfeng.songswiper.runnables.RunnableImage;
-import com.codepath.michfeng.songswiper.runnables.RunnableSort;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-import spotify.api.spotify.SpotifyApi;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,12 +37,7 @@ public class FeedFragment extends Fragment {
 
     private RecyclerView rvFeed;
     protected PostsAdapter adapter;
-    private List<Post> allPosts;
-    private Button btnSort;
-    private String accessToken;
-    private boolean sorted; // True for sorted by recommendation, false for sorted by date.
-
-    private SwipeRefreshLayout swipeContainer;
+    protected List<Post> allPosts;
 
     private static final String TAG = "FeedFragment";
 
@@ -66,14 +54,16 @@ public class FeedFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param accessToken Parameter 1.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
      * @return A new instance of fragment FeedFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FeedFragment newInstance(String accessToken) {
+    public static FeedFragment newInstance(String param1, String param2) {
         FeedFragment fragment = new FeedFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, accessToken);
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,16 +79,12 @@ public class FeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        accessToken = getArguments().getString("accessToken");
-        sorted = false;
 
         rvFeed = view.findViewById(R.id.rvFeed);
-        btnSort = view.findViewById(R.id.btnSort);
-        btnSort.setText("Sort by recommended");
 
         // Initialize list that holds posts.
         allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(getContext(), allPosts, accessToken);
+        adapter = new PostsAdapter(getContext(), allPosts);
 
         // Set adapter on recycler view.
         rvFeed.setAdapter(adapter);
@@ -106,46 +92,7 @@ public class FeedFragment extends Fragment {
         // Set layout manager on recycler view.
         rvFeed.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // look up swipe container view
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-
-        // Setup refresh listener (start loading new data).
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                fetchTimelineAsync(0);
-            }
-        });
-
-        // Configure refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
         queryPosts();
-
-
-        btnSort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (!sorted) {
-                        sortPosts();
-                        btnSort.setText("Sort by date");
-                    } else {
-                        queryPosts();
-                        btnSort.setText("Sort by recommended");
-                    }
-
-                    sorted = !sorted;
-                } catch (InterruptedException e) {
-                    Log.e("TAG", "error sorting: " + e.getMessage());
-                    e.printStackTrace();
-                }
-
-            }
-        });
     }
 
     private void queryPosts() {
@@ -170,43 +117,13 @@ public class FeedFragment extends Fragment {
                     return;
                 }
                 for (Post post : posts) {
-                   // Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
                 }
 
                 // Save received posts.
-                allPosts.clear();
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
             }
         });
-    }
-
-    private void fetchTimelineAsync(int page) {
-        adapter.clear();
-        queryPosts();
-        swipeContainer.setRefreshing(false);
-    }
-
-    private void sortPosts() throws InterruptedException {
-
-        queryPosts();
-
-        Log.i(TAG, "before sorting: " + allPosts.toString());
-
-        Log.i(TAG, "allPosts size: " + allPosts.size());
-        List<Post> newPosts = new ArrayList<>();
-        newPosts.addAll(allPosts);
-
-        RunnableSort run = new RunnableSort(new SpotifyApi(accessToken), newPosts);
-        Thread thread = new Thread(run);
-        thread.setName("run");
-        thread.start();
-
-        allPosts.clear();
-        allPosts.addAll(run.getSorted());
-
-        Log.i(TAG, "after sorting: " + run.getSorted());
-
-        adapter.notifyDataSetChanged();
     }
 }

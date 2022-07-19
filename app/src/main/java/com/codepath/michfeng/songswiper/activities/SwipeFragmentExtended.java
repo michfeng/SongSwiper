@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.codepath.michfeng.songswiper.fragments.FeedFragment;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 
 public class SwipeFragmentExtended extends AppCompatActivity {
@@ -13,6 +12,6 @@ public class SwipeFragmentExtended extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new FeedFragment()).commit();}
+                    .add(android.R.id.content, new SwipeFragment()).commit();}
     }
 }

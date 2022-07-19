@@ -2,8 +2,6 @@ package com.codepath.michfeng.songswiper.models;
 
 import org.parceler.Parcel;
 
-import spotify.models.tracks.TrackSimplified;
-
 @Parcel
 // Keeps track of specific recommendations in "cards"
 public class Card {
@@ -13,18 +11,16 @@ public class Card {
     public String artistImagePath;
     public String preview;
     public String uri;
-    public String id;
 
     public Card() {}
 
-    public Card (String trackname, String artist, String coverIm, String artistIm, String preview, String uri, String id) {
-        this.trackName = trackname;
+    public Card (String track, String artist, String coverIm, String artistIm, String preview, String uri) {
+        this.trackName = track;
         this.artistName = artist;
         this.coverImagePath = coverIm;
         this.artistImagePath = artistIm;
         this.preview = preview;
         this.uri = uri;
-        this.id = id;
     }
 
     public String getArtistImagePath() {
@@ -70,12 +66,4 @@ public class Card {
     public String getUri() { return uri; }
 
     public void setUri(String uri) { this.uri = uri; }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
 }
