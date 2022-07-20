@@ -101,7 +101,6 @@ public class SwipeFragment extends Fragment {
 
         ParseUser user = ParseUser.getCurrentUser();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
-        Log.i(TAG, "currentId " + user.getString("likedObjectsId"));
         query.getInBackground(user.getString("likedObjectsId"), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject obj, ParseException e) {

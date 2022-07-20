@@ -77,11 +77,9 @@ public class RunnableSort implements Runnable {
 
         Log.i(TAG, "posts size: " + posts.size());
         Log.i(TAG, "postFeatures size: " + postsFeatures.size());
-        // Log.i(TAG, " size: " + posts.size());
 
         for (int i = 0; i < postsFeatures.size(); i++) {
             if (postsFeatures.get(i) != null) {
-                PostScore p = new PostScore(posts.get(i), getScore(postsFeatures.get(i), average));
                 float score = getScore(postsFeatures.get(i), average);
                 Log.i(TAG, "Post " + posts.get(i).getCaption() + " score: " + score);
                 scores.put(getScore(postsFeatures.get(i), average), posts.get(i));
@@ -169,38 +167,5 @@ public class RunnableSort implements Runnable {
 
         // The lower the score, the closer the track is to user's taste.
         return score;
-    }
-
-    public class PostScore implements Comparable {
-
-        Post post;
-        float score;
-
-        public PostScore (Post p, float s) {
-            this.post = p;
-            this.score = s;
-        }
-
-        public float getScore() {
-            return score;
-        }
-
-        public void setScore(float score) {
-            this.score = score;
-        }
-
-        public void setPost(Post post) {
-            this.post = post;
-        }
-
-        public Post getPost() {
-            return post;
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            PostScore ps = (PostScore) o;
-            return Float.compare(this.score, ps.getScore());
-        }
     }
 }

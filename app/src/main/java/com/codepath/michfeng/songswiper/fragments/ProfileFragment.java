@@ -246,7 +246,7 @@ public class ProfileFragment extends Fragment {
                 ParseUser user = ParseUser.getCurrentUser();
                 user.put("profilePicture", file);
                 user.saveInBackground();
-                Glide.with(getContext()).load(file).circleCrop().into(ivProfile);
+                Glide.with(getContext()).load(user.getParseFile("profilePicture").getUrl()).circleCrop().into(ivProfile);
             } else {
                 Toast.makeText(getContext(), "Picture wasn't taken", Toast.LENGTH_SHORT).show();
             }
