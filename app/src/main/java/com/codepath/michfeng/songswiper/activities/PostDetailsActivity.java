@@ -29,7 +29,6 @@ public class PostDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "PostDetailsActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

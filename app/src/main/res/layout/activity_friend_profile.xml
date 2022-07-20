@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.FriendProfileActivity">
+
+    <RelativeLayout
+        android:id="@+id/friendProfileHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ivFriendProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            tools:layout_editor_absoluteX="136dp"
+            tools:layout_editor_absoluteY="72dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvFriendSongs"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@+id/tvFriendName"
+            android:layout_marginTop="10dp"
+            android:scrollbars="horizontal" />
+
+        <GridView
+            android:id="@+id/gridViewFriend"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rvFriendSongs"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/tvFriendName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivFriendProfile"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            tools:text="Name" />
+
+        <Button
+            android:id="@+id/btnFollow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Follow" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvNoneFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="No profile found! Try searching someone else."
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+</RelativeLayout>

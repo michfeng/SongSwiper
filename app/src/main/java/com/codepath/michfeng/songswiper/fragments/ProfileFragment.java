@@ -156,17 +156,18 @@ public class ProfileFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         ivHover.setVisibility(View.INVISIBLE);
                         tvChange.setVisibility(View.INVISIBLE);
-                        launchCamera();
+
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchCamera();
+                            }
+                        });
+
+                        t.start();
                         break;
                 }
                 return true;
-            }
-        });
-
-        ivProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchCamera();
             }
         });
     }

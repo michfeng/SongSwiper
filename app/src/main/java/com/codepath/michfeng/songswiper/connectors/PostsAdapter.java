@@ -56,6 +56,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         this.context = context;
         this.posts = posts;
         this.accessToken = accessToken;
+        Log.i(TAG, "Constructor called");
     }
 
     @NonNull
@@ -114,6 +115,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
 
         public void bind(Post post) {
+            Log.i(TAG, "bind is happening");
             // Bind data to view elements.
             String username = post.getUser().getUsername();
             String caption = post.getCaption();

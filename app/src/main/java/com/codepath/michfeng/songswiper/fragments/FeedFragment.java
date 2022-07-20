@@ -170,7 +170,7 @@ public class FeedFragment extends Fragment {
                     return;
                 }
                 for (Post post : posts) {
-                   // Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
                 }
 
                 // Save received posts.

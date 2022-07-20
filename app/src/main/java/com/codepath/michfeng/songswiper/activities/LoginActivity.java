@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         // Checks to see if response is from the correct activity.
         if (requestCode == REQUEST_CODE) {
             AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
-            Log.i(TAG,"request code approved");
+            Log.i(TAG,"Request code approved");
 
             switch (response.getType()) {
                 // The response is successful, and has produced an authorization token.
@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Most likely authentication has been cancelled.
                 default:
                     Log.e(TAG, "Cancelled during authentication: "+ response.getType().toString());
+                    authenticateSpotify();
             }
         }
     }
@@ -186,28 +187,29 @@ public class LoginActivity extends AppCompatActivity {
 
         ParseObject likedObjects = new ParseObject("LikedObjects");
 
-        likedObjects.put("likedTracks", new LinkedList<String>());
-        likedObjects.put("likedArtists", new LinkedList<String>());
-        likedObjects.put("likedGenres", new LinkedList<String>());
+        likedObjects.put("likedTracks", new ArrayList<>());
+        likedObjects.put("likedArtists", new ArrayList<>());
+        likedObjects.put("likedGenres", new ArrayList<>());
+        likedObjects.put("user", newUser);
 
-        likedObjects.put("user", newUser.getObjectId());
-
-        Log.i(TAG, "checkpoint 1");
 
         likedObjects.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                Log.i(TAG, "successful save");
                 if (e != null) {
-                    Log.i(TAG, "error saving: " + e.getStackTrace());
+                    Log.i(TAG, "Error saving: " + e.getStackTrace());
                     e.printStackTrace();
                 } else {
-                    Log.i(TAG, "successful save");
-                    Log.i(TAG, "object id: " + likedObjects.getObjectId());
-                    newUser.put("likedObjectsId", likedObjects.getObjectId());
+                    Log.i(TAG, "Successful save");
+                    Log.i(TAG, "Object id: " + likedObjects.getObjectId());
+                    newUser.put("LikedObjectsId", likedObjects.getObjectId());
                     newUser.saveInBackground();
                 }
             }
         });
+
+        ParseObject followers = new ParseObject("Followers");
+        followers.put("user", newUser);
+        followers.saveInBackground();
     }
 }
