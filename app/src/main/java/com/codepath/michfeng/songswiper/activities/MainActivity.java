@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -70,9 +71,8 @@ public class MainActivity extends AppCompatActivity {
                         Bundle bundle = new Bundle();
                         bundle.putString("accessToken",finalAccessToken);
                         fragment.setArguments(bundle);
-                        
 
-                        fragmentManager.beginTransaction().replace(R.id.rlContainer, fragment).commit();
+                        fragmentManager.beginTransaction().replace(R.id.flSubContainer, fragment).commit();
                         return true;
                     }
                 }

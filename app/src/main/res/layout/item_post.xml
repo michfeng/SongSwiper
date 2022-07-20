@@ -30,11 +30,13 @@
 
     <TextView
         android:id="@+id/itemDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/itemProfile"
         android:layout_marginStart="10dp"
         android:layout_marginTop="0dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/tvDate"
         android:layout_toEndOf="@+id/itemProfile"
         tools:text="Michelle just liked a song!" />
 
