@@ -123,15 +123,26 @@ public class LoginActivity extends AppCompatActivity {
         String accessToken = response.getAccessToken();
 
         UserService userService = new UserService(queue, msharedPreferences);
-        userService.get( () -> {
-            SpotifyUser user = userService.getUser();
-            editor = getSharedPreferences("SPOTIFY",0).edit();
-            editor.putString("userid",user.id);
+        try {
+            Log.i(TAG, "Getting user");
+            userService.get(() -> {
+                try {
+                    SpotifyUser user = userService.getUser();
+                    editor = getSharedPreferences("SPOTIFY", 0).edit();
+                    editor.putString("userid", user.id);
 
-            Log.d("STARTING", "Retrieved user information");
-            editor.commit();
-            startMainActivity(user.id,accessToken);
-        });
+                    Log.d("STARTING", "Retrieved user information");
+                    editor.commit();
+                    startMainActivity(user.id, accessToken);
+                } catch (Exception e){
+                    Log.e(TAG, "Exception getting user1: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getting user: " + e.getMessage());
+            e.printStackTrace();
+        }
 
     }
 

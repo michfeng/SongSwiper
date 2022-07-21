@@ -7,15 +7,18 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.fragments.FeedFragment;
 import com.codepath.michfeng.songswiper.fragments.ProfileFragment;
+import com.codepath.michfeng.songswiper.fragments.ProfileFragment1;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.Parse;
 import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ParseUser.getCurrentUser() == null) {
+            // No user logged in, redirect to login page.
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -44,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 // Defining Fragments (each represents a tab).
                 final Fragment fragmentSwipe = new SwipeFragment();
                 final Fragment fragmentFeed = new FeedFragment();
-                final Fragment fragmentProfile = new ProfileFragment();
+                final Fragment fragmentProfile = new ProfileFragment1();
                 //final Fragment fragmentSearch = new SearchFragment();
 
                 // Handles navigation selection.
@@ -79,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
                 // Defaults to swipe view.
-                bottomNavigationView.setSelectedItemId(R.id.action_swipe);
+                bottomNavigationView.setSelectedItemId(R.id.action_profile);
             }
         });
 

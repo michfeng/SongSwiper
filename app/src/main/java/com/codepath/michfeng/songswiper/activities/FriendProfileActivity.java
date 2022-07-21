@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.connectors.GridPostAdapter;
+import com.codepath.michfeng.songswiper.models.Post;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -23,17 +25,24 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import spotify.models.tracks.TrackFull;
 
 public class FriendProfileActivity extends AppCompatActivity {
 
     RelativeLayout profileHolder;
     ImageView ivProfile;
     RecyclerView rvFriendSongs;
-    GridView gridViewFriend;
+    RecyclerView gridViewFriend;
     TextView tvNoneFound;
     TextView tvFriendName;
     Button btnFollow;
+    GridPostAdapter gridAdapter;
+
+    List<Post> posts;
+    List<String> trackIds;
 
     private static final String TAG = "FriendProfileActivity";
 
@@ -100,7 +109,48 @@ public class FriendProfileActivity extends AppCompatActivity {
                     }
                 }
             });
+
+
+            // Populate posts.
+            posts = new ArrayList<>();
+            gridAdapter = new GridPostAdapter(this, posts, "accessToken");
+            gridViewFriend.setAdapter(gridAdapter);
+            queryPosts(id);
         }
+    }
+
+    private void queryPosts(String id) {
+        // Specify which class to query.
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        // Include data referred by user key.
+        query.include(Post.KEY_USER);
+
+        // Limit query to latest 20 items.
+        query.setLimit(20);
+
+        // Order posts by creation date.
+        query.addDescendingOrder("createdAt");
+        query.whereEqualTo("user", id);
+
+        // Start asynchronous call for posts.
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG,"Issue with getting posts",e);
+                    return;
+                }
+                for (Post post : posts) {
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                }
+
+                // Save received posts.
+                posts.clear();
+                posts.addAll(posts);
+                gridAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     // Follow or unfollow other user with given id.

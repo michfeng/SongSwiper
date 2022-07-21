@@ -91,7 +91,7 @@ public class SwipeFragment extends Fragment {
         // Initialize fields.
         viewpager = view.findViewById(R.id.viewpager);
         cards = new ArrayList<>();
-        adapter = new ViewPager2Adapter(getContext(), cards, accessToken);
+        adapter = new ViewPager2Adapter(getContext(), cards, accessToken, getActivity());
         index = 0;
 
         // Set the adapter of ViewPager (swiping view) to our created adapter.

@@ -3,6 +3,7 @@ package com.codepath.michfeng.songswiper.connectors;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.fragments.FeedFragment;
 import com.codepath.michfeng.songswiper.fragments.SwipeFragment;
 import com.codepath.michfeng.songswiper.models.Card;
 import com.codepath.michfeng.songswiper.models.Post;
@@ -37,13 +40,15 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     private Context context;
     private List<Card> cards;
     private String accessToken;
+    private FragmentActivity activity;
 
     private static final String TAG = "ViewPager2Adapter";
 
-    public ViewPager2Adapter(Context context, List<Card> cards, String accessToken) {
+    public ViewPager2Adapter(Context context, List<Card> cards, String accessToken, FragmentActivity a) {
         this.context = context;
         this.cards = cards;
         this.accessToken = accessToken;
+        this.activity = a;
     }
 
     @NonNull
@@ -75,21 +80,26 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
                     api.changePlaybackState(body);
                 } catch (SpotifyActionFailedException e) {
                     if (e.getMessage().equals("Player command failed: No active device found")) {
-                        Toast.makeText(context, "No active device found, please open player.", Toast.LENGTH_LONG);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, "No active device found, please open player.", Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 }
 
-                /* MediaPlayer mediaPlayer = new MediaPlayer();
+                /*MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
+                    Log.i(TAG, "Preview link: " + card.getPreview());
                     mediaPlayer.setDataSource(card.getPreview());
                     mediaPlayer.prepare();
                     mediaPlayer.start();
-
                 } catch (IOException e) {
                     Log.e(TAG, "Error playing preview.");
                     e.printStackTrace();
-                } */
+                }*/
             }
         });
 

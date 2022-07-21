@@ -30,7 +30,7 @@
             android:layout_marginTop="10dp"
             android:scrollbars="horizontal" />
 
-        <GridView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/gridViewFriend"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
