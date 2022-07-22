@@ -112,9 +112,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     return mDetector.onTouchEvent(event);
                 }
             });
-
         }
-
 
         public void bind(Post post) {
             Log.i(TAG, "bind is happening");
@@ -273,7 +271,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         // Handles types of actions on each post.
-        class myGestureListener extends GestureDetector.SimpleOnGestureListener {
+         class myGestureListener extends GestureDetector.SimpleOnGestureListener {
             @Override
             // Double tap to like event.
             public boolean onDoubleTapEvent(MotionEvent e) {

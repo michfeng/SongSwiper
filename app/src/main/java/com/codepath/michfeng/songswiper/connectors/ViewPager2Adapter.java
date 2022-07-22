@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,19 +88,6 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
                         }
                     });
                 }
-
-
-                /*MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    Log.i(TAG, "Preview link: " + card.getPreview());
-                    mediaPlayer.setDataSource(card.getPreview());
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (IOException e) {
-                    Log.e(TAG, "Error playing preview.");
-                    e.printStackTrace();
-                }*/
             }
         });
 
@@ -115,16 +103,17 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView ivCardCover;
-        private ImageView ivCardArtist;
         private TextView tvCardName;
         private TextView tvCardArtist;
+        private RelativeLayout relativeLayoutCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivCardCover =  itemView.findViewById(R.id.ivCardCover);
-            ivCardArtist = itemView.findViewById(R.id.ivCardArtist);
             tvCardArtist = itemView.findViewById(R.id.tvCardArtist);
             tvCardName = itemView.findViewById(R.id.tvCardName);
+            relativeLayoutCard = itemView.findViewById(R.id.relativeLayoutCard);
+            relativeLayoutCard.setClipToOutline(true);
         }
 
         public void bind(Card card) {

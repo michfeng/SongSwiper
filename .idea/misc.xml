@@ -4,12 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/card_background.xml" value="0.1555" />
+        <entry key="app/src/main/res/drawable/image_shadow.xml" value="0.243" />
         <entry key="app/src/main/res/layout/activity_card_details.xml" value="0.24365942028985507" />
         <entry key="app/src/main/res/layout/activity_friend_profile.xml" value="0.2199432373046875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/layout/activity_post_details.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.27445652173913043" />
-        <entry key="app/src/main/res/layout/cards_holder.xml" value="0.23697916666666666" />
+        <entry key="app/src/main/res/layout/cards_holder.xml" value="0.479266357421875" />
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.14739583333333334" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.24365942028985507" />
         <entry key="app/src/main/res/layout/fragment_profile1.xml" value="0.1" />
