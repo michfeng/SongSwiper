@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,8 +29,10 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import spotify.api.spotify.SpotifyApi;
 import spotify.models.artists.ArtistSimplified;
 import spotify.models.tracks.TrackFull;
+import spotify.models.users.User;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -56,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
+
+        ParseUser.getCurrentUser().logOut();
 
         btnAuthenticate = (Button) findViewById(R.id.btnAuthenticate);
         btnAuthenticate.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
             userService.get(() -> {
                 try {
                     SpotifyUser user = userService.getUser();
+
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
                     editor.putString("userid", user.id);
 
@@ -159,6 +165,7 @@ public class LoginActivity extends AppCompatActivity {
             newUser.signUp();
         } catch (ParseException e) {
         // Signing up threw an exception, so they may already exist in database, so we try logging in.
+            Log.i(TAG, "Exception with signup: " + e.getMessage());
             logInUser(id);
         }
 
@@ -213,11 +220,14 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Log.i(TAG, "Successful save");
                     Log.i(TAG, "Object id: " + likedObjects.getObjectId());
-                    newUser.put("LikedObjectsId", likedObjects.getObjectId());
+                    newUser.put("likedObjectsId", likedObjects.getObjectId());
                     newUser.saveInBackground();
                 }
             }
         });
+
+        newUser.put("likedObjectsId", likedObjects.getObjectId());
+        newUser.saveInBackground();
 
         ParseObject followers = new ParseObject("Followers");
         followers.put("user", newUser);

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.codepath.michfeng.songswiper.R;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -22,6 +23,7 @@ public class SearchResultsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "Here: ");
         handleIntent(getIntent());
     }
 
@@ -32,6 +34,8 @@ public class SearchResultsActivity extends Activity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            Log.i(TAG, "Search intent found");
+
             String search = intent.getStringExtra(SearchManager.QUERY);
 
             ParseQuery<ParseUser> query = ParseUser.getQuery();

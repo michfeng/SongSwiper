@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/card_background.xml" value="0.1555" />
         <entry key="app/src/main/res/layout/activity_card_details.xml" value="0.24365942028985507" />
-        <entry key="app/src/main/res/layout/activity_friend_profile.xml" value="0.20206705729166669" />
+        <entry key="app/src/main/res/layout/activity_friend_profile.xml" value="0.2199432373046875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/layout/activity_post_details.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.27445652173913043" />
@@ -15,7 +15,7 @@
         <entry key="app/src/main/res/layout/fragment_profile1.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_profile2.xml" value="0.3223958333333333" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.19010416666666666" />
-        <entry key="app/src/main/res/layout/item_post.xml" value="0.23697916666666666" />
+        <entry key="app/src/main/res/layout/item_post.xml" value="0.48042399088541665" />
         <entry key="app/src/main/res/layout/item_post_profile.xml" value="0.6009477675686208" />
         <entry key="app/src/main/res/layout/item_song.xml" value="0.35" />
         <entry key="app/src/main/res/layout/item_track.xml" value="0.24365942028985507" />

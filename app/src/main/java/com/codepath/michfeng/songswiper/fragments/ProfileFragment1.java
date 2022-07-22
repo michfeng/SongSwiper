@@ -117,6 +117,7 @@ public class ProfileFragment1 extends Fragment {
         playlistViewer = view.findViewById(R.id.playlistViewer);
         userSince = view.findViewById(R.id.userSince);
         currentUser = ParseUser.getCurrentUser();
+        Log.i(TAG, "Current user: " + currentUser);
         tvStats = view.findViewById(R.id.tvStats);
         ivHover = view.findViewById(R.id.ivHover);
         tvChange = view.findViewById(R.id.tvChangeProfile);
@@ -143,7 +144,7 @@ public class ProfileFragment1 extends Fragment {
 
         LinearLayoutManager HorizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         songs = new ArrayList<>();
-        adapter = new PlaylistAdapter1(getContext(), songs, accessToken, getActivity());
+        adapter = new PlaylistAdapter1(getContext(), songs, accessToken);
         playlistViewer.setAdapter(adapter);
         playlistViewer.setLayoutManager(HorizontalLayout);
 

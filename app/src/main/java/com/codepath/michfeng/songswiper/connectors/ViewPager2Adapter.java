@@ -79,15 +79,15 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
                 try {
                     api.changePlaybackState(body);
                 } catch (SpotifyActionFailedException e) {
-                    if (e.getMessage().equals("Player command failed: No active device found")) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "No active device found, please open player.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
+                    Log.e(TAG, "Error playing body: " + e.getMessage());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, "Error playing: " + e.getMessage(), Toast.LENGTH_SHORT);
+                        }
+                    });
                 }
+
 
                 /*MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);

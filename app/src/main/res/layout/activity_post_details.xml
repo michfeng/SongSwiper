@@ -33,10 +33,12 @@
         android:id="@+id/ivDetailsAlbum"
         android:layout_width="291dp"
         android:layout_height="271dp"
+        android:layout_below="@+id/ivPlayDetails"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="45dp"
-        android:layout_marginBottom="45dp"
+        android:layout_marginBottom="11dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
@@ -56,21 +58,31 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvDetailUsername"
         android:layout_alignTop="@+id/ivDetailsUser"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_alignEnd="@+id/tvDetailUsername"
+        android:layout_marginStart="134dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="0dp"
         android:text="TextView" />
 
     <ImageView
         android:id="@+id/ivPlayDetails"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_above="@+id/ivDetailsAlbum"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_below="@+id/tvDetailsCaption"
-        android:layout_alignParentStart="false"
         android:layout_alignParentEnd="false"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="379dp"
+        android:layout_toEndOf="@+id/tvNumLikes"
         app:srcCompat="@android:drawable/ic_media_play" />
+
+    <TextView
+        android:id="@+id/tvNumLikes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDetailsCaption"
+        android:layout_alignStart="@+id/tvDetailsCaption"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView" />
 </RelativeLayout>

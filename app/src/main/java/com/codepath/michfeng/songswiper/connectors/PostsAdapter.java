@@ -92,6 +92,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private LikeButton btnLike;
         private ImageView btnPlay;
         private TextView tvDate;
+        private TextView tvLikes;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,6 +103,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             btnLike = itemView.findViewById(R.id.btnLike);
             btnPlay = itemView.findViewById(R.id.playButton);
             tvDate = itemView.findViewById(R.id.tvDate);
+            tvLikes = itemView.findViewById(R.id.tvLikes);
 
             GestureDetector mDetector = new GestureDetector(new myGestureListener());
             itemView.setOnTouchListener(new View.OnTouchListener() {
@@ -147,6 +149,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ParseQuery<ParseUser> relationQuery = relation.getQuery();
 
             relationQuery.whereEqualTo(ParseUser.KEY_OBJECT_ID, ParseUser.getCurrentUser().getObjectId());
+
             Log.i(TAG, relationQuery.getClassName());
             relationQuery.getFirstInBackground(new GetCallback<ParseUser>() {
                 @Override
@@ -162,6 +165,27 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                         }
                         else
                             e.printStackTrace();
+                    }
+                }
+            });
+
+            // Query for get display number of likes.
+            // Get number of likes.
+            ParseRelation<ParseUser> rel = post.getRelation("likes");
+            ParseQuery<ParseUser> query = rel.getQuery();
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (e == null) {
+                        if (objects.size() == 1)
+                            tvLikes.setText("" + objects.size() + " like");
+                        else
+                            tvLikes.setText("" + objects.size() + " likes");
+                    } else if (e.equals(ParseException.OBJECT_NOT_FOUND)) {
+                        tvLikes.setText("0 likes");
+                    } else {
+                        Log.e(TAG, "Error getting numLikes: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             });

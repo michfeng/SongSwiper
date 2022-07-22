@@ -13,11 +13,12 @@
 
         <ImageView
             android:id="@+id/ivFriendProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_below="@+id/btnFollow"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="15dp"
             tools:layout_editor_absoluteX="136dp"
             tools:layout_editor_absoluteY="72dp"
             tools:srcCompat="@tools:sample/avatars" />
@@ -26,8 +27,8 @@
             android:id="@+id/rvFriendSongs"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_below="@+id/tvFriendName"
-            android:layout_marginTop="10dp"
+            android:layout_below="@+id/ivFriendProfile"
+            android:layout_marginTop="20dp"
             android:scrollbars="horizontal" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -35,15 +36,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/rvFriendSongs"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="20dp" />
 
         <TextView
             android:id="@+id/tvFriendName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ivFriendProfile"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+            android:layout_alignTop="@+id/ivFriendProfile"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="false"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toEndOf="@+id/ivFriendProfile"
+            android:textAlignment="center"
+            android:textSize="24sp"
             tools:text="Name" />
 
         <Button
@@ -51,6 +58,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Follow" />
+
+        <TextView
+            android:id="@+id/tvFriendUserSince"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvFriendName"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toEndOf="@+id/ivFriendProfile"
+            android:textAlignment="center"
+            tools:text="user since" />
     </RelativeLayout>
 
     <TextView

@@ -200,8 +200,13 @@ public class LikedActivity extends AppCompatActivity {
 
                                 spotifyApi.addItemsToPlaylist(track, id, 0);
                                 Log.i(TAG, "added " + card.getTrackName());
-                                Toast.makeText(LikedActivity.this, "Song successfully added to playlist!", Toast.LENGTH_LONG).show();
-
+                                runOnUiThread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      Toast.makeText(LikedActivity.this, "Song successfully added to playlist!", Toast.LENGTH_LONG).show();
+                                                  }
+                                              }
+                                );
                             }
                         }
                     }

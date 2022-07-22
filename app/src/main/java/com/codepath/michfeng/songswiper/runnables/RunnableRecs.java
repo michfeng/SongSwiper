@@ -8,6 +8,7 @@ import android.util.Log;
 import com.codepath.michfeng.songswiper.R;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -60,18 +61,12 @@ public class RunnableRecs implements Runnable {
         seeds[1] = new ArrayList<String>();
         seeds[2] = new ArrayList<String>();
 
-        Log.i(TAG, "checkpoint 1");
-
-        //List<String> [] likedObjects = getLikedObjects(user);
-
         Log.i(TAG, "liked tracks  * " + likedTracks.toString());
         Log.i(TAG, "liked artists * " + likedArtists.toString());
         Log.i(TAG, "liked genres * " + likedGenres.toString());
 
         List<TrackFull> topTrackFull = spotifyApi.getTopTracks(new HashMap<>()).getItems();
         List<ArtistFull> topArtistFull = spotifyApi.getTopArtists(new HashMap<>()).getItems();
-
-        Log.i(TAG, "checkpoint 2");
 
         List<String> topGenres = new ArrayList<>();
         List<String> topTracks = new ArrayList<>();

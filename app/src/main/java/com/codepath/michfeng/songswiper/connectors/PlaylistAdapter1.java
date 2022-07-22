@@ -33,11 +33,10 @@ public class PlaylistAdapter1 extends RecyclerView.Adapter<PlaylistAdapter1.View
 
     private static final String TAG = "PlaylistAdapter";
 
-    public PlaylistAdapter1 (Context context, List<PlaylistTrack> posts, String accessToken, FragmentActivity activity) {
+    public PlaylistAdapter1 (Context context, List<PlaylistTrack> posts, String accessToken) {
         this.context = context;
         this.tracks = posts;
         this.accessToken = accessToken;
-        this.activity = activity;
     }
 
     @NonNull
@@ -112,20 +111,20 @@ public class PlaylistAdapter1 extends RecyclerView.Adapter<PlaylistAdapter1.View
 
                                 try {
                                     spotifyApi.changePlaybackState(body);
-                                    activity.runOnUiThread(new Runnable() {
+                                    /*activity.runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, "Playing track: " + track.getTrack().getName(), Toast.LENGTH_SHORT);
                                         }
-                                    });
+                                    });*/
                                 } catch (SpotifyActionFailedException e) {
                                     Log.e(TAG, "Error playing body: " + e.getMessage());
-                                    activity.runOnUiThread(new Runnable() {
+                                    /*activity.runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, "Error playing: " + e.getMessage(), Toast.LENGTH_SHORT);
                                         }
-                                    });
+                                    });*/
                                 }
                             }
                         });

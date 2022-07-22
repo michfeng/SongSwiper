@@ -112,6 +112,8 @@ public class SwipeFragment extends Fragment {
             public void run() {
                 Log.i(TAG, "run() called from thread.");
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
+                String likedObjectsId = user.getString("likedObjectsId");
+                Log.i(TAG, "likedObjectsId:" + likedObjectsId);
                 query.getInBackground(user.getString("likedObjectsId"), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject obj, ParseException e) {
@@ -177,6 +179,9 @@ public class SwipeFragment extends Fragment {
                                     viewpager.setCurrentItem(1, true);
                                 }
                             });
+                        } else {
+                            Log.e(TAG, "Error getting liked objects: " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 });

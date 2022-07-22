@@ -27,6 +27,7 @@ public class UserService {
     }
 
     public SpotifyUser getUser() {
+        Log.i(TAG, "getUser called");
         return user;
     }
 
@@ -40,18 +41,23 @@ public class UserService {
             user = gson.fromJson(response.toString(), SpotifyUser.class);
             Log.i(TAG, "Successful callback");
             callBack.onSuccess();
-        }, error -> get (() -> { Log.e(TAG, "Error getting user: " + error.toString()); }))
+        }, error -> get (() -> {
+            Log.e(TAG, "Error getting user: " + error.toString());
+        }))
         {
            @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                Map<String, String> headers = new HashMap<>();
+               Log.i(TAG, "getHeaders() called");
 
                String token = msharedPreferences.getString("token", "");
                String auth = "Bearer " + token;
                headers.put("Authorization", auth);
+               Log.i(TAG, "Auth: " + auth);
                return headers;
            }
         };
         mqueue.add(jsonObjectRequest);
+        Log.i(TAG, "jsonObjectRequest added to queue: " + jsonObjectRequest.toString());
     }
 }
