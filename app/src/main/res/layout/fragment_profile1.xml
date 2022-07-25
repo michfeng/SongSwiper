@@ -10,6 +10,7 @@
         android:id="@+id/ivProfile"
         android:layout_width="130dp"
         android:layout_height="130dp"
+        android:background="@drawable/circle"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="false"
         android:layout_marginStart="30dp"

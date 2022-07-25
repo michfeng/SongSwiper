@@ -154,6 +154,9 @@ public class SwipeFragment extends Fragment {
                                 c.setArtistName(rec.getArtists().get(0).getName());
                                 c.setUri(rec.getUri());
                                 c.setPreview(rec.getPreviewUrl());
+                                c.setDuration(rec.getDurationMs());
+                                c.setExplicit(rec.isExplicit());
+
 
                                 RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
                                 Thread threadImage = new Thread(runImage);

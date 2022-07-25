@@ -14,10 +14,13 @@ public class Card {
     public String preview;
     public String uri;
     public String id;
+    public boolean isExplicit;
+    public int duration;
 
     public Card() {}
 
-    public Card (String trackname, String artist, String coverIm, String artistIm, String preview, String uri, String id) {
+    public Card (String trackname, String artist, String coverIm, String artistIm, String preview,
+                 String uri, String id, boolean isExplicit, int duration) {
         this.trackName = trackname;
         this.artistName = artist;
         this.coverImagePath = coverIm;
@@ -25,6 +28,8 @@ public class Card {
         this.preview = preview;
         this.uri = uri;
         this.id = id;
+        this.isExplicit = isExplicit;
+        this.duration = duration;
     }
 
     public String getArtistImagePath() {
@@ -78,4 +83,12 @@ public class Card {
     public String getId() {
         return id;
     }
+
+    public boolean isExplicit() { return isExplicit; }
+
+    public int getDuration() { return duration; }
+
+    public void setDuration(int duration) { this.duration = duration; }
+
+    public void setExplicit(boolean explicit) { isExplicit = explicit; }
 }
