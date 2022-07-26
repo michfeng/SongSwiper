@@ -203,13 +203,13 @@ public class LoginActivity extends AppCompatActivity {
 
         newUser.signUpInBackground();
 
+        // Make new LikedObjects object for new user.
         ParseObject likedObjects = new ParseObject("LikedObjects");
 
         likedObjects.put("likedTracks", new ArrayList<>());
         likedObjects.put("likedArtists", new ArrayList<>());
         likedObjects.put("likedGenres", new ArrayList<>());
         likedObjects.put("user", newUser);
-
 
         likedObjects.saveInBackground(new SaveCallback() {
             @Override
@@ -233,4 +233,6 @@ public class LoginActivity extends AppCompatActivity {
         followers.put("user", newUser);
         followers.saveInBackground();
     }
+
+
 }
