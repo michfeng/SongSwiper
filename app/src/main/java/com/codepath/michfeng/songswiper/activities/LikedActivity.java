@@ -47,6 +47,11 @@ public class LikedActivity extends AppCompatActivity {
     private Button share;
     private Button add;
     private String accessToken;
+    private ImageView ivExplicit;
+    private TextView tvExplicit;
+    private TextView duration;
+
+
 
     private static final String TAG = "LikedActivity";
 
@@ -61,13 +66,27 @@ public class LikedActivity extends AppCompatActivity {
         ivAlbum = (ImageView) findViewById(R.id.ivAlbumLiked);
         share = (Button) findViewById(R.id.btnShareLiked);
         add = (Button) findViewById(R.id.btnAddLiked);
+        ivExplicit = (ImageView) findViewById(R.id.ivExplicit);
+        tvExplicit = (TextView) findViewById(R.id.tvExplicit);
+        duration = (TextView) findViewById(R.id.tvDuration);
+
         accessToken = getIntent().getStringExtra("accesstoken");
         Log.i(TAG, "accessToken: " + accessToken);
+
+        ivAlbum.setClipToOutline(true);
 
         Card card = (Card) Parcels.unwrap(getIntent().getParcelableExtra("card"));
 
         tvSong.setText(card.getTrackName());
         tvArtist.setText(card.getArtistName());
+
+        // If the song is not explicit, hide explicit symbol and text.
+        if (! card.isExplicit()) {
+            ivExplicit.setVisibility(View.INVISIBLE);
+            tvExplicit.setVisibility(View.INVISIBLE);
+        }
+
+        duration.setText(msToText(card.getDuration()));
 
         if (card.getCoverImagePath() != null) {
             Glide.with(this).load(card.getCoverImagePath()).into(ivAlbum);
@@ -76,10 +95,6 @@ public class LikedActivity extends AppCompatActivity {
         // Add liked song, genre, and artist to their respective queues stored in user.
         // Query for LikedObjects object corresponding to user.
         ParseUser currentUser = ParseUser.getCurrentUser();
-
-        /* final Queue<TrackFull>[] likedTracksQ = new Queue[]{new ArrayList<TrackFull>()};
-        final Queue<ArtistSimplified>[] likedArtistsQ = new Queue[]{new ArrayList<ArtistSimplified>()};
-        final Queue<String>[] likedGenresQ = new Queue[]{new ArrayList<String>()}; */
 
         final List<String>[] likedTracksQ = new List[]{new ArrayList<>()};
         final List<String>[] likedArtistsQ = new List[]{new ArrayList<>()};
@@ -200,8 +215,13 @@ public class LikedActivity extends AppCompatActivity {
 
                                 spotifyApi.addItemsToPlaylist(track, id, 0);
                                 Log.i(TAG, "added " + card.getTrackName());
-                                Toast.makeText(LikedActivity.this, "Song successfully added to playlist!", Toast.LENGTH_LONG).show();
-
+                                runOnUiThread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      Toast.makeText(LikedActivity.this, "Song successfully added to playlist!", Toast.LENGTH_LONG).show();
+                                                  }
+                                              }
+                                );
                             }
                         }
                     }
@@ -216,6 +236,16 @@ public class LikedActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Converts time in milliseconds to readable text.
+    private String msToText(int duration) {
+        int totalSeconds = duration / 1000;
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        String formatted = "" + minutes + " minutes, " + seconds + " seconds";
+        return formatted;
     }
 
     private void updateLikedObject(List<String> likedTracks, List<String> likedArtists,

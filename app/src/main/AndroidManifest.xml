@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SongSwiper"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.FriendProfileActivity"
+            android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.codepath.fileprovider"
@@ -26,9 +29,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/fileprovider" />
         </provider>
-        <activity
-            android:name=".activities.SwipeFragmentExtended"
-            android:exported="false" />
 
         <meta-data
             android:name="com.parse.SERVER_URL"
@@ -41,9 +41,18 @@
             android:value="@string/back4app_client_key" />
 
         <activity
+            android:name=".activities.SearchResultsActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
             android:name=".activities.ComposeActivity"
             android:exported="false" />
-
         <activity
             android:name="com.spotify.sdk.android.auth.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

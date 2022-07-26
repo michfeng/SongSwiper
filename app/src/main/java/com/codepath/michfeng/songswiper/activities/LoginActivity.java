@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,8 +29,10 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import spotify.api.spotify.SpotifyApi;
 import spotify.models.artists.ArtistSimplified;
 import spotify.models.tracks.TrackFull;
+import spotify.models.users.User;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -57,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
 
+        ParseUser.getCurrentUser().logOut();
+
         btnAuthenticate = (Button) findViewById(R.id.btnAuthenticate);
         btnAuthenticate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         // Checks to see if response is from the correct activity.
         if (requestCode == REQUEST_CODE) {
             AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
-            Log.i(TAG,"request code approved");
+            Log.i(TAG,"Request code approved");
 
             switch (response.getType()) {
                 // The response is successful, and has produced an authorization token.
@@ -98,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Most likely authentication has been cancelled.
                 default:
                     Log.e(TAG, "Cancelled during authentication: "+ response.getType().toString());
+                    authenticateSpotify();
             }
         }
     }
@@ -122,15 +128,27 @@ public class LoginActivity extends AppCompatActivity {
         String accessToken = response.getAccessToken();
 
         UserService userService = new UserService(queue, msharedPreferences);
-        userService.get( () -> {
-            SpotifyUser user = userService.getUser();
-            editor = getSharedPreferences("SPOTIFY",0).edit();
-            editor.putString("userid",user.id);
+        try {
+            Log.i(TAG, "Getting user");
+            userService.get(() -> {
+                try {
+                    SpotifyUser user = userService.getUser();
 
-            Log.d("STARTING", "Retrieved user information");
-            editor.commit();
-            startMainActivity(user.id,accessToken);
-        });
+                    editor = getSharedPreferences("SPOTIFY", 0).edit();
+                    editor.putString("userid", user.id);
+
+                    Log.d("STARTING", "Retrieved user information");
+                    editor.commit();
+                    startMainActivity(user.id, accessToken);
+                } catch (Exception e){
+                    Log.e(TAG, "Exception getting user1: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getting user: " + e.getMessage());
+            e.printStackTrace();
+        }
 
     }
 
@@ -147,6 +165,7 @@ public class LoginActivity extends AppCompatActivity {
             newUser.signUp();
         } catch (ParseException e) {
         // Signing up threw an exception, so they may already exist in database, so we try logging in.
+            Log.i(TAG, "Exception with signup: " + e.getMessage());
             logInUser(id);
         }
 
@@ -187,27 +206,32 @@ public class LoginActivity extends AppCompatActivity {
         // Make new LikedObjects object for new user.
         ParseObject likedObjects = new ParseObject("LikedObjects");
 
-        likedObjects.put("likedTracks", new LinkedList<String>());
-        likedObjects.put("likedArtists", new LinkedList<String>());
-        likedObjects.put("likedGenres", new LinkedList<String>());
-        likedObjects.put("user", newUser.getObjectId());
-
+        likedObjects.put("likedTracks", new ArrayList<>());
+        likedObjects.put("likedArtists", new ArrayList<>());
+        likedObjects.put("likedGenres", new ArrayList<>());
+        likedObjects.put("user", newUser);
 
         likedObjects.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                Log.i(TAG, "successful save");
                 if (e != null) {
-                    Log.i(TAG, "error saving: " + e.getStackTrace());
+                    Log.i(TAG, "Error saving: " + e.getStackTrace());
                     e.printStackTrace();
                 } else {
-                    Log.i(TAG, "successful save");
-                    Log.i(TAG, "object id: " + likedObjects.getObjectId());
+                    Log.i(TAG, "Successful save");
+                    Log.i(TAG, "Object id: " + likedObjects.getObjectId());
                     newUser.put("likedObjectsId", likedObjects.getObjectId());
                     newUser.saveInBackground();
                 }
             }
         });
+
+        newUser.put("likedObjectsId", likedObjects.getObjectId());
+        newUser.saveInBackground();
+
+        ParseObject followers = new ParseObject("Followers");
+        followers.put("user", newUser);
+        followers.saveInBackground();
     }
 
 

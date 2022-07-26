@@ -22,7 +22,10 @@ import com.codepath.michfeng.songswiper.runnables.RunnableImage;
 import com.codepath.michfeng.songswiper.runnables.RunnableSort;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -114,6 +117,8 @@ public class FeedFragment extends Fragment {
             @Override
             public void onRefresh() {
                 fetchTimelineAsync(0);
+                queryPosts();
+                btnSort.setText("Sort by recommended");
             }
         });
 
@@ -149,6 +154,61 @@ public class FeedFragment extends Fragment {
     }
 
     private void queryPosts() {
+        // Query for Followers object.
+        /*ParseQuery<ParseObject> followersQuery = ParseQuery.getQuery("Followers");
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.i(TAG, "current user is null");
+        }
+
+        String followersObjectId = currentUser.getString("followersObjectId");
+        followersQuery.whereEqualTo("objectId", followersObjectId);
+        followersQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    ParseObject followers = objects.get(0);
+
+                    // Query for following users.
+                    ParseRelation<ParseUser> followingRel = followers.getRelation("following");
+                    ParseQuery<ParseUser> followingQ = followingRel.getQuery();
+                    followingQ.findInBackground(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> users, ParseException e) {
+                            if (e == null) {
+                                ParseQuery<Post> postQuery = ParseQuery.getQuery(Post.class);
+                                postQuery.include(Post.KEY_USER);
+                                postQuery.setLimit(20);
+                                postQuery.addDescendingOrder("createdAt");
+                                postQuery.whereContainedIn("user", objects);
+                                postQuery.findInBackground(new FindCallback<Post>() {
+                                    @Override
+                                    public void done(List<Post> posts, ParseException e) {
+                                        if (e != null) {
+                                            Log.e(TAG, "Issue with getting posts", e);
+                                            return;
+                                        }
+                                        for (Post post : posts) {
+                                            Log.i(TAG, "Post: " + post.getCaption() + ", username: " + post.getUser().getUsername());
+                                        }
+
+                                        // Save received posts.
+                                        allPosts.clear();
+                                        allPosts.addAll(posts);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    Log.e(TAG, "Error at getting Followers object: " + e.getMessage());
+                }
+            }
+        });*/
+
+
         // Specify which class to query.
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
@@ -170,7 +230,7 @@ public class FeedFragment extends Fragment {
                     return;
                 }
                 for (Post post : posts) {
-                   // Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
                 }
 
                 // Save received posts.

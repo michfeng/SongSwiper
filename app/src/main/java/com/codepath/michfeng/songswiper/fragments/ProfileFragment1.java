@@ -2,20 +2,11 @@ package com.codepath.michfeng.songswiper.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -23,17 +14,31 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.connectors.GridPostAdapter;
 import com.codepath.michfeng.songswiper.connectors.PlaylistAdapter;
+import com.codepath.michfeng.songswiper.connectors.PlaylistAdapter1;
+import com.codepath.michfeng.songswiper.models.Post;
 import com.codepath.michfeng.songswiper.runnables.RunnablePlaylist;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.parse.Parse;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
@@ -48,27 +53,30 @@ import spotify.models.playlists.PlaylistTrack;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
+ * Use the {@link ProfileFragment1#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment1 extends Fragment {
 
     private TextView tvName;
     private ImageView ivProfile;
     private ParseUser currentUser;
     private RecyclerView playlistViewer;
     protected List<PlaylistTrack> songs;
-    protected PlaylistAdapter adapter;
+    protected PlaylistAdapter1 adapter;
     private BottomNavigationView bottomNavigationView;
     private TextView userSince;
     private TextView tvStats;
     private ImageView ivHover;
     private TextView tvChange;
     private File photoFile;
+    private GridPostAdapter gridAdapter;
+    private RecyclerView gridViewProfile;
+    private List<Post> posts;
 
     private String photoFileName = "photo.jpg";
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
-    private static final String TAG = "ProfileFragment";
+    private static final String TAG = "ProfileFragment1";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,7 +87,7 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ProfileFragment() {
+    public ProfileFragment1() {
         // Required empty public constructor
     }
 
@@ -91,8 +99,8 @@ public class ProfileFragment extends Fragment {
      * @return A new instance of fragment ProfileFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String accessToken) {
-        ProfileFragment fragment = new ProfileFragment();
+    public static ProfileFragment1 newInstance(String accessToken) {
+        ProfileFragment1 fragment = new ProfileFragment1();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, accessToken);
         fragment.setArguments(args);
@@ -109,9 +117,11 @@ public class ProfileFragment extends Fragment {
         playlistViewer = view.findViewById(R.id.playlistViewer);
         userSince = view.findViewById(R.id.userSince);
         currentUser = ParseUser.getCurrentUser();
+        Log.i(TAG, "Current user: " + currentUser);
         tvStats = view.findViewById(R.id.tvStats);
         ivHover = view.findViewById(R.id.ivHover);
         tvChange = view.findViewById(R.id.tvChangeProfile);
+        gridViewProfile = view.findViewById(R.id.gridViewProfile);
 
         Glide.with(getContext()).load("https://htmlcolorcodes.com/assets/images/colors/gray-color-solid-background-1920x1080.png").circleCrop().into(ivHover);
         ivHover.setAlpha(127);
@@ -132,10 +142,11 @@ public class ProfileFragment extends Fragment {
             Glide.with(getContext()).load(image.getUrl()).circleCrop().into(ivProfile);
         }
 
+        LinearLayoutManager HorizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         songs = new ArrayList<>();
-        adapter = new PlaylistAdapter(getContext(), songs, accessToken);
+        adapter = new PlaylistAdapter1(getContext(), songs, accessToken);
         playlistViewer.setAdapter(adapter);
-        playlistViewer.setLayoutManager(new LinearLayoutManager(getContext()));
+        playlistViewer.setLayoutManager(HorizontalLayout);
 
         try {
             querySongs();
@@ -143,6 +154,14 @@ public class ProfileFragment extends Fragment {
             Log.i(TAG, "exception here!");
             e.printStackTrace();
         }
+
+        // Populate and inflate posts.
+        posts = new ArrayList<>();
+        gridAdapter = new GridPostAdapter(getContext(), posts, accessToken);
+        gridViewProfile.setAdapter(gridAdapter);
+        gridViewProfile.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        queryPosts();
+        Log.i(TAG, "Adapter count: " + gridAdapter.getItemCount());
 
         // On hover, can add profile picture.
         ivProfile.setOnTouchListener(new View.OnTouchListener() {
@@ -172,11 +191,47 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void queryPosts() {
+        // Specify which class to query.
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        // Include data referred by user key.
+        query.include(Post.KEY_USER);
+
+        // Limit query to latest 20 items.
+        query.setLimit(20);
+
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+
+        // Order posts by creation date.
+        query.addDescendingOrder("createdAt");
+
+        // Start asynchronous call for posts.
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> p, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG,"Issue with getting posts",e);
+                    return;
+                }
+                for (Post post : posts) {
+                    Log.i(TAG,"Post: "+post.getCaption()+", username: " + post.getUser().getUsername());
+                }
+
+                // Save received posts.
+                posts.clear();
+                posts.addAll(p);
+                gridAdapter.notifyDataSetChanged();
+                Log.i(TAG, "Adapter count: " + gridAdapter.getItemCount());
+            }
+        });
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.fragment_profile1, container, false);
     }
 
     private void querySongs() throws InterruptedException {
@@ -247,7 +302,7 @@ public class ProfileFragment extends Fragment {
                 ParseUser user = ParseUser.getCurrentUser();
                 user.put("profilePicture", file);
                 user.saveInBackground();
-                Glide.with(getContext()).load(user.getParseFile("profilePicture").getUrl()).circleCrop().into(ivProfile);
+                Glide.with(getContext()).load(byteArray).circleCrop().into(ivProfile);
             } else {
                 Toast.makeText(getContext(), "Picture wasn't taken", Toast.LENGTH_SHORT).show();
             }

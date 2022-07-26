@@ -1,9 +1,6 @@
 package com.codepath.michfeng.songswiper.runnables;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import com.codepath.michfeng.songswiper.activities.LikedActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,22 +11,22 @@ import spotify.models.paging.Paging;
 import spotify.models.playlists.PlaylistSimplified;
 import spotify.models.playlists.PlaylistTrack;
 
-public class RunnablePlaylist implements Runnable {
+public class RunnableFriendPlaylist implements Runnable {
     List<PlaylistTrack> playlist;
     SpotifyApi spotifyApi;
+    String userId;
 
     private volatile boolean finish;
     private static final String TAG = "RunnablePlaylist";
 
-    public RunnablePlaylist(SpotifyApi api) {
+    public RunnableFriendPlaylist(SpotifyApi api, String id) {
+        this.userId = id;
         this.spotifyApi = api;
     }
 
     @Override
     public void run() {
-        Log.i(TAG, "I am here");
-
-        List<PlaylistSimplified> playlists = spotifyApi.getPlaylists(new HashMap<String, String>()).getItems();
+        List<PlaylistSimplified> playlists = spotifyApi.getUserPlaylists(userId, new HashMap<String, String>()).getItems();
         List<String> names = new ArrayList<>();
         String id = "";
 

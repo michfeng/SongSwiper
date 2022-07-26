@@ -91,20 +91,34 @@ public class SwipeFragment extends Fragment {
         // Initialize fields.
         viewpager = view.findViewById(R.id.viewpager);
         cards = new ArrayList<>();
-        adapter = new ViewPager2Adapter(getContext(), cards, accessToken);
+        adapter = new ViewPager2Adapter(getContext(), cards, accessToken, getActivity());
         index = 0;
 
         // Set the adapter of ViewPager (swiping view) to our created adapter.
         viewpager.setAdapter(adapter);
 
         // Start loading screen.
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LoaderKt.showDialog(getContext(), true, R.raw.lottie);
+            }
+        });
 
         ParseUser user = ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
-        query.getInBackground(user.getString("likedObjectsId"), new GetCallback<ParseObject>() {
+        Log.i(TAG, "Current user: " + user);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "run() called from thread.");
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedObjects");
+                String likedObjectsId = user.getString("likedObjectsId");
+                Log.i(TAG, "likedObjectsId:" + likedObjectsId);
+                query.getInBackground(user.getString("likedObjectsId"), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject obj, ParseException e) {
                         if (e == null) {
+                            Log.i(TAG, "Successful getting likedObjects");
                             // No exception, so we have successfully found corresponding LikedObjects for user.
                             // Note that there should only be one row corresponding to each user, so we only
                             // need to retrieve the first out of this returned list.
@@ -118,27 +132,21 @@ public class SwipeFragment extends Fragment {
 
                             RunnableRecs r = new RunnableRecs(spotifyApi, getContext(), ParseUser.getCurrentUser(),
                                     likedTracks, likedArtists, likedGenres);
-                            Log.i(TAG, "checkpoint 1");
 
                             // Using Thread to make network calls on because Android doesn't allow for calls on main thread.
                             Thread thread = new Thread(r);
                             thread.setName("r");
                             thread.start();
                             try {
-                                Log.i(TAG, "checkpoint 2");
                                 recommendations = r.getRecs();
                                 Log.i(TAG,"recommended tracks: " + recommendations);
                             } catch (InterruptedException ex) {
+                                Log.e(TAG, "Error retrieving recommendations: " + ex.getMessage());
                                 ex.printStackTrace();
                             }
-                            //Log.i(TAG,"recommended tracks: " + recommendations.getTracks().toString());
 
                             for (TrackSimplified rec : recommendations.getTracks()) {
-                                // Check whether this song is playable in user's market.
-
                                 Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
-                                if (rec.getArtists().get(0).getImages() == null)
-                                    Log.i(TAG, "null images");
 
                                 Card c = new Card();
                                 c.setId(rec.getId());
@@ -146,6 +154,9 @@ public class SwipeFragment extends Fragment {
                                 c.setArtistName(rec.getArtists().get(0).getName());
                                 c.setUri(rec.getUri());
                                 c.setPreview(rec.getPreviewUrl());
+                                c.setDuration(rec.getDurationMs());
+                                c.setExplicit(rec.isExplicit());
+
 
                                 RunnableImage runImage = new RunnableImage(spotifyApi, rec.getId());
                                 Thread threadImage = new Thread(runImage);
@@ -159,23 +170,29 @@ public class SwipeFragment extends Fragment {
                                 }
 
                                 cards.add(c);
-
-
                             }
 
                             adapter.notifyDataSetChanged();
+
+                            LoaderKt.hideDialog();
+
+                            viewpager.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    viewpager.setCurrentItem(1, true);
+                                }
+                            });
+                        } else {
+                            Log.e(TAG, "Error getting liked objects: " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 });
-
-
-        viewpager.post(new Runnable() {
-            @Override
-            public void run() {
-                viewpager.setCurrentItem(1, true);
             }
         });
 
+        t.start();
+        Log.i(TAG, "Recommendation thread started");
 
         // To get swipe event of viewpager2.
         viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
