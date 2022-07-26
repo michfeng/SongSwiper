@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import spotify.api.spotify.SpotifyApi;
@@ -40,18 +41,23 @@ public class RunnableRecs implements Runnable {
     List<String> likedTracks;
     List<String> likedArtists;
     List<String> likedGenres;
+    Map<String, String> options;
+    boolean isExplicit;
 
 
     private static final String TAG = "RunnableRecs";
 
     public RunnableRecs(SpotifyApi api, Context context, ParseUser user,
-                        List<String> likedTracks, List<String> likedArtists, List<String> likedGenres) {
+                        List<String> likedTracks, List<String> likedArtists, List<String> likedGenres,
+                        Map<String, String> options, boolean isExplicit) {
         this.spotifyApi = api;
         this.context = context;
         this.user = user;
         this.likedTracks = likedTracks;
         this.likedArtists = likedArtists;
         this.likedGenres = likedGenres;
+        this.options = options;
+        this.isExplicit = isExplicit;
     }
 
     @Override
@@ -104,10 +110,7 @@ public class RunnableRecs implements Runnable {
         Log.i(TAG,"seed genres: " + seeds[1].toString());
         Log.i(TAG,"seed artists: " + seeds[0].toString());
 
-        recs = spotifyApi.getRecommendations(seeds[0], seeds[1], seeds[2], new HashMap<String, String>());
-
-        while (recs == null) {
-        }
+        recs = spotifyApi.getRecommendations(seeds[0], seeds[1], seeds[2], options);
 
         finish = true;
 
