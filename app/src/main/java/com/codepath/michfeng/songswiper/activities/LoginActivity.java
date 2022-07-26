@@ -184,15 +184,14 @@ public class LoginActivity extends AppCompatActivity {
 
         newUser.signUpInBackground();
 
+        // Make new LikedObjects object for new user.
         ParseObject likedObjects = new ParseObject("LikedObjects");
 
         likedObjects.put("likedTracks", new LinkedList<String>());
         likedObjects.put("likedArtists", new LinkedList<String>());
         likedObjects.put("likedGenres", new LinkedList<String>());
-
         likedObjects.put("user", newUser.getObjectId());
 
-        Log.i(TAG, "checkpoint 1");
 
         likedObjects.saveInBackground(new SaveCallback() {
             @Override
@@ -210,4 +209,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
