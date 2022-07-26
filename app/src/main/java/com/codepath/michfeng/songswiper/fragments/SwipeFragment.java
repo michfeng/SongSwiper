@@ -272,29 +272,34 @@ public class SwipeFragment extends Fragment {
         CheckBox checkExplicit = bottomSheetDialog.findViewById(R.id.checkExplicit);
         Button addFilters = bottomSheetDialog.findViewById(R.id.btnFilter);
 
-        List<Float> acoustic = sliderAcoustic.getValues();
-        List<Float> danceability = sliderDanceability.getValues();
-        List<Float> energy = sliderEnergy.getValues();
-        List<Float> popularity = sliderPopularity.getValues();
-        boolean isChecked = checkExplicit.isChecked();
+
 
         addFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             // Get new recommendations with new filters.
             public void onClick(View v) {
+                List<Float> acoustic = sliderAcoustic.getValues();
+                List<Float> danceability = sliderDanceability.getValues();
+                List<Float> energy = sliderEnergy.getValues();
+                List<Float> popularity = sliderPopularity.getValues();
+                boolean isChecked = checkExplicit.isChecked();
 
                 // Map containing optional parameters for recommendations.
                 Map<String, String> options = new HashMap<>();
-                options.put("max_acousticness", "" + (acoustic.get(1)/100) );
-                options.put("min_acousticness", "" + (acoustic.get(0)/100));
-                options.put("max_danceability", "" + (danceability.get(1)/100));
-                options.put("min_danceability", "" + (danceability.get(1)/100));
-                options.put("max_energy", "" + (energy.get(1)/100));
-                options.put("min_energy", "" + (energy.get(1)/100));
-                options.put("max_popularity", "" + (popularity.get(1)/100));
-                options.put("min_popularity", "" + (popularity.get(0)/100));
+                options.put("max_acousticness", "" + (acoustic.get(1)/100.0));
+                options.put("min_acousticness", "" + (acoustic.get(0)/100.0));
+                options.put("max_danceability", "" + (danceability.get(1)/100.0));
+                options.put("min_danceability", "" + (danceability.get(1)/100.0));
+                options.put("max_energy", "" + (energy.get(1)/100.0));
+                options.put("min_energy", "" + (energy.get(1)/100.0));
+                options.put("max_popularity", "" + Math.round(popularity.get(1)));
+                options.put("min_popularity", "" + Math.round(popularity.get(0)));
+
+                Log.i(TAG, "Map keys: " + options.keySet());
+                Log.i(TAG, "Map values: " + options.values());
 
                 getRecommendations(options, !isChecked);
+                bottomSheetDialog.hide();
             }
         });
 
