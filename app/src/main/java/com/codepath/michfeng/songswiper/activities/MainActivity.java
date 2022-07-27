@@ -31,22 +31,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNavigationView;
+    public BottomNavigationView bottomNavigationView;
     private String accessToken;
     private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*if (ParseUser.getCurrentUser() == null) {
-            Log.i("Main activity", "Current user is null");
-            // No user logged in, redirect to login page.
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        } else {
-            Log.i("MainActivity", "" + ParseUser.getCurrentUser());
-        }*/
 
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -129,12 +120,16 @@ public class MainActivity extends AppCompatActivity {
                         Intent i = new Intent(MainActivity.this, FriendProfileActivity.class);
                         i.putExtra("accessToken", accessToken);
                         if (e == null) {
-                            // Object was found. Display user profile.
-                            // There should only be one user here because users are unique.
-                            ParseUser otherUser = objects.get(0);
-                            i.putExtra("userId", otherUser.getObjectId());
-                            i.putExtra("spotifyId", otherUser.getString("username"));
-                            startActivity(i);
+                            if (objects.size() > 0) {
+                                // Object was found. Display user profile.
+                                // There should only be one user here because users are unique.
+                                ParseUser otherUser = objects.get(0);
+                                i.putExtra("userId", otherUser.getObjectId());
+                                i.putExtra("spotifyId", otherUser.getString("username"));
+                                startActivity(i);
+                            } else {
+                                startActivity(i);
+                            }
                         }
                         else if (e.equals(ParseException.OBJECT_NOT_FOUND)) {
                             // No object found. Switch to activity with no user.

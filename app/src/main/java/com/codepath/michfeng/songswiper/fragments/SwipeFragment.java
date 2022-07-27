@@ -209,6 +209,8 @@ public class SwipeFragment extends Fragment {
                                 ex.printStackTrace();
                             }
 
+                            cards.clear();
+
                             for (TrackSimplified rec : recommendations.getTracks()) {
                                 Log.i(TAG, "card: " + rec.getName() + ", artist: " + rec.getArtists().get(0).getName());
 
@@ -239,6 +241,7 @@ public class SwipeFragment extends Fragment {
                             }
 
                             adapter.notifyDataSetChanged();
+                            index = 0;
 
                             LoaderKt.hideDialog();
 
@@ -289,9 +292,9 @@ public class SwipeFragment extends Fragment {
                 options.put("max_acousticness", "" + (acoustic.get(1)/100.0));
                 options.put("min_acousticness", "" + (acoustic.get(0)/100.0));
                 options.put("max_danceability", "" + (danceability.get(1)/100.0));
-                options.put("min_danceability", "" + (danceability.get(1)/100.0));
+                options.put("min_danceability", "" + (danceability.get(0)/100.0));
                 options.put("max_energy", "" + (energy.get(1)/100.0));
-                options.put("min_energy", "" + (energy.get(1)/100.0));
+                options.put("min_energy", "" + (energy.get(0)/100.0));
                 options.put("max_popularity", "" + Math.round(popularity.get(1)));
                 options.put("min_popularity", "" + Math.round(popularity.get(0)));
 

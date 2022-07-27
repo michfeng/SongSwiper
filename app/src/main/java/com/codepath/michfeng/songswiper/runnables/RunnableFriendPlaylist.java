@@ -22,6 +22,7 @@ public class RunnableFriendPlaylist implements Runnable {
     public RunnableFriendPlaylist(SpotifyApi api, String id) {
         this.userId = id;
         this.spotifyApi = api;
+        Log.i(TAG, "Initialized playlist getter for user with id: " + userId);
     }
 
     @Override

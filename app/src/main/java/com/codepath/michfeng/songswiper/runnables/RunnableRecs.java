@@ -143,9 +143,6 @@ public class RunnableRecs implements Runnable {
         // Generate random integer between [0,2] to decide which field gets one seed (other two each get two seeds).
         int randSeed = (int) (Math.random() * 3);
 
-        // If any fields are empty, we use the top field in their place.
-
-
         // Generate random integer in [0,1] to decide whether that one seed is a liked or top object.
         int randType = (int) (Math.random() * 2);
 
