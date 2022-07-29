@@ -60,6 +60,8 @@ public class PostDetailsActivity extends AppCompatActivity {
         Glide.with(this).load(post.getUser().getParseFile("profilePicture").getUrl()).circleCrop().into(ivUser);
         Glide.with(this).load(post.getImage()).into(ivAlbum);
 
+        ivAlbum.setClipToOutline(true);
+
         // Get number of likes.
         ParseRelation<ParseUser> relation = post.getRelation("likes");
         ParseQuery<ParseUser> query = relation.getQuery();

@@ -101,6 +101,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView btnPlay;
         private TextView tvDate;
         private TextView tvLikes;
+        private int likes = 0;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -189,6 +190,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                             tvLikes.setText("" + objects.size() + " like");
                         else
                             tvLikes.setText("" + objects.size() + " likes");
+                        likes = objects.size();
                     } else if (e.equals(ParseException.OBJECT_NOT_FOUND)) {
                         tvLikes.setText("0 likes");
                     } else {
@@ -213,6 +215,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                     // Change the appearance of button to reflect (shade).
                     btnLike.setLiked(true);
+
+                    if (likes == 1)
+                        tvLikes.setText("" + (likes + 1) + " like");
+                    else
+                        tvLikes.setText("" + (likes + 1) + " likes");
+                    likes = likes + 1;
                 }
 
                 @Override
@@ -228,6 +236,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                     // Change the appearance of button to reflect action (unshade).
                     btnLike.setLiked(false);
+
+                    if (likes == 2)
+                        tvLikes.setText("" + (likes - 1) + " like");
+                    else
+                        tvLikes.setText("" + (likes - 1) + " likes");
+                    likes = likes - 1;
                 }
             });
 
@@ -264,22 +278,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             notifyDataSetChanged();
         }
 
-        public void onLike (View v) {
-            Post post = posts.get(getAdapterPosition());
-
-            // Record that specific user has liked the post.
-            ParseRelation<ParseUser> relation = post.getRelation("likes");
-            relation.add(ParseUser.getCurrentUser());
-            try {
-                post.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            // Change the appearance of button to reflect (shade).
-            btnLike.setLiked(true);
-        }
-
         // Handles types of actions on each post.
          class myGestureListener extends GestureDetector.SimpleOnGestureListener {
             @Override
@@ -298,6 +296,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                 // Change the appearance of button to reflect (shade).
                 btnLike.setLiked(true);
+
+                if (likes == 1)
+                    tvLikes.setText("" + (likes) + " like");
+                else
+                    tvLikes.setText("" + (likes) + " likes");
+
+                likes++;
+
                 return super.onDoubleTapEvent(e);
             }
 
