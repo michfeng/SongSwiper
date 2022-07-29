@@ -21,11 +21,11 @@
         android:id="@+id/btnLike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/itemUsername"
-        android:layout_alignStart="@+id/itemUsername"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="20dp"
-        app:icon_size="7dp"
+        android:layout_alignStart="@id/itemAlbum"
+        android:layout_alignTop="@+id/itemAlbum"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="215dp"
+        app:icon_size="6dp"
         app:icon_type="heart" />
 
     <TextView
@@ -47,32 +47,33 @@
         android:layout_below="@+id/itemProfile"
         android:layout_alignStart="@+id/itemProfile"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="8dp"
+        android:textSize="10sp"
         tools:text="michfeng" />
 
     <ImageView
         android:id="@+id/itemAlbum"
-        android:layout_width="68dp"
-        android:layout_height="92dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_below="@+id/itemDescription"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/card_background"
         tools:srcCompat="@tools:sample/avatars" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="0.75dp"
+        android:background="@color/light_pink" />
 
     <ImageView
         android:id="@+id/playButton"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignTop="@+id/btnLike"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="0dp"
-        android:layout_toEndOf="@+id/btnLike"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignStart="@+id/itemAlbum"
+        android:layout_alignTop="@+id/itemAlbum"
+        android:layout_marginStart="85dp"
+        android:layout_marginTop="85dp"
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <TextView
@@ -88,11 +89,11 @@
         android:id="@+id/tvLikes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLike"
-        android:layout_alignStart="@+id/btnLike"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="5dp"
+        android:layout_below="@+id/itemAlbum"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="17dp"
+        android:layout_toEndOf="@+id/btnLike"
         android:text="TextView"
-        android:textSize="8sp" />
+        android:textSize="10sp" />
 
 </RelativeLayout>

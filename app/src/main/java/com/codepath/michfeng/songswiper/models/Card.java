@@ -16,11 +16,12 @@ public class Card {
     public String id;
     public boolean isExplicit;
     public int duration;
+    public int popularity;
 
     public Card() {}
 
     public Card (String trackname, String artist, String coverIm, String artistIm, String preview,
-                 String uri, String id, boolean isExplicit, int duration) {
+                 String uri, String id, boolean isExplicit, int duration, int popularity) {
         this.trackName = trackname;
         this.artistName = artist;
         this.coverImagePath = coverIm;
@@ -30,6 +31,7 @@ public class Card {
         this.id = id;
         this.isExplicit = isExplicit;
         this.duration = duration;
+        this.popularity = popularity;
     }
 
     public String getArtistImagePath() {
@@ -48,9 +50,7 @@ public class Card {
         return trackName;
     }
 
-    public void setArtistImagePath(String artistImagePath) {
-        this.artistImagePath = artistImagePath;
-    }
+    public void setArtistImagePath(String artistImagePath) { this.artistImagePath = artistImagePath; }
 
     public void setArtistName(String artistName) {
         this.artistName = artistName;
@@ -91,4 +91,8 @@ public class Card {
     public void setDuration(int duration) { this.duration = duration; }
 
     public void setExplicit(boolean explicit) { isExplicit = explicit; }
+
+    public int getPopularity() { return popularity; }
+
+    public void setPopularity(int popularity) { this.popularity = popularity; }
 }

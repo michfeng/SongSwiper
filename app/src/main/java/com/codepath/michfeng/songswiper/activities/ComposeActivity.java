@@ -95,6 +95,7 @@ public class ComposeActivity extends AppCompatActivity {
                 }
 
                 // Redirect back to swiping.
+                finish();
                 Intent intent = new Intent(ComposeActivity.this, MainActivity.class);
                 Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
                 intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
