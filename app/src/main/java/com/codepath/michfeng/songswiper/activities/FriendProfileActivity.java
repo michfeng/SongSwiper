@@ -78,6 +78,7 @@ public class FriendProfileActivity extends AppCompatActivity {
         accessToken = getIntent().getStringExtra("accessToken");
         friendSpotifyId = getIntent().getStringExtra("spotifyId");
         String id = getIntent().getStringExtra("userId");
+        Log.i(TAG, "Retrieved user with id: " + id + ", spotifyId: " + friendSpotifyId);
 
         if (id == null) {
             // No profile was found.
@@ -159,14 +160,17 @@ public class FriendProfileActivity extends AppCompatActivity {
     }
 
     private void querySongs(String id) throws InterruptedException {
-        Log.i(TAG, "here");
-
+        Log.i(TAG, "Making RunnableFriendPlaylist with id: " + id);
         RunnableFriendPlaylist runPlaylist = new RunnableFriendPlaylist(new SpotifyApi(accessToken), id);
         Thread thread = new Thread(runPlaylist);
         thread.setName("runPlaylist");
         thread.start();
 
+
         songs.addAll(runPlaylist.getPlaylist());
+
+        Log.i(TAG, "Finished adding songs to playlist viewer");
+
         Log.i(TAG, songs.toString());
         adapter.notifyDataSetChanged();
     }
@@ -185,7 +189,6 @@ public class FriendProfileActivity extends AppCompatActivity {
 
         // Order posts by creation date.
         query.addDescendingOrder("createdAt");
-        // query.whereEqualTo("user", id);
 
         // Start asynchronous call for posts.
         query.findInBackground(new FindCallback<Post>() {

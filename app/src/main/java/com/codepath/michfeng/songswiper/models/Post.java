@@ -20,6 +20,7 @@ public class Post extends ParseObject {
     public static final String KEY_LIKES = "likes";
     public static final String KEY_URI = "uri";
     public static final String KEY_ID = "songId";
+    private boolean showMenu = false;
 
     public String getCaption() {
         return getString(KEY_CAPTION);
@@ -54,6 +55,10 @@ public class Post extends ParseObject {
     public String getId () { return getString(KEY_ID); }
 
     public void setId (String id) { put(KEY_ID, id); }
+
+    public void setShowMenu(boolean bool) { showMenu = bool; }
+
+    public boolean isShowMenu() { return showMenu; }
 
     public static String calculateTimeAgo(Date createdAt) {
 

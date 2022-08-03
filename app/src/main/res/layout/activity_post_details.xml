@@ -4,51 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.PostDetailsActivity">
+    tools:context=".activities.PostDetailsActivity"
+    android:layout_margin="15dp">
 
     <ImageView
         android:id="@+id/ivDetailsUser"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_below="@+id/ivDetailsAlbum"
         android:layout_marginTop="20dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tvDetailUsername"
-        android:layout_width="215dp"
-        android:layout_height="72dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="69dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivDetailsUser"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="30dp"
         android:layout_toEndOf="@+id/ivDetailsUser"
-        android:textSize="34sp"
+        android:textAlignment="viewStart"
+        android:textSize="20sp"
+        android:textStyle="bold"
         tools:text="Michelle" />
 
     <ImageView
         android:id="@+id/ivDetailsAlbum"
-        android:layout_width="291dp"
-        android:layout_height="271dp"
-        android:layout_below="@+id/ivPlayDetails"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="45dp"
-        android:layout_marginBottom="11dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/card_background"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tvDetailsCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivDetailsUser"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/tvDetailUsername"
+        android:layout_alignStart="@+id/tvDetailUsername"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
         android:textSize="20sp"
         tools:text="Hi this is my caption!" />
 
@@ -62,27 +58,23 @@
         android:layout_marginStart="134dp"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="0dp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textAlignment="textEnd" />
 
     <ImageView
         android:id="@+id/ivPlayDetails"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_below="@+id/tvDetailsCaption"
-        android:layout_alignParentEnd="false"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="379dp"
-        android:layout_toEndOf="@+id/tvNumLikes"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignTop="@+id/ivDetailsAlbum"
+        android:layout_alignBottom="@+id/ivDetailsAlbum"
+        android:layout_centerHorizontal="true"
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <TextView
         android:id="@+id/tvNumLikes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvDetailsCaption"
-        android:layout_alignStart="@+id/tvDetailsCaption"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
         android:text="TextView" />
 </RelativeLayout>

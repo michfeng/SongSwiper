@@ -1,10 +1,12 @@
 package com.codepath.michfeng.songswiper.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -15,20 +17,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.codepath.michfeng.songswiper.PostSwipeHelper;
 import com.codepath.michfeng.songswiper.R;
+import com.codepath.michfeng.songswiper.activities.FriendProfileActivity;
+import com.codepath.michfeng.songswiper.activities.MainActivity;
+import com.codepath.michfeng.songswiper.activities.PostDetailsActivity;
 import com.codepath.michfeng.songswiper.connectors.PostsAdapter;
 import com.codepath.michfeng.songswiper.models.Post;
-import com.codepath.michfeng.songswiper.runnables.RunnableImage;
 import com.codepath.michfeng.songswiper.runnables.RunnableSort;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import spotify.api.spotify.SpotifyApi;
@@ -122,6 +125,75 @@ public class FeedFragment extends Fragment {
             }
         });
 
+        // Handle swipe actions on posts.
+        int swipeRightColor = getResources().getColor(R.color.light_pink);
+        int swipeLeftColor = getResources().getColor(R.color.light_yellow);
+        int swipeLeftIconResource = R.drawable.details_icon;
+        int swipeRightIconResource = R.drawable.profile;
+
+        PostSwipeHelper swipeHelper = new PostSwipeHelper(swipeRightColor, swipeLeftColor, swipeRightIconResource, swipeLeftIconResource, getContext()) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                if (direction == ItemTouchHelper.LEFT) {
+                    // Handle left swipe to go to details.
+                    int position = viewHolder.getAdapterPosition();
+
+                    Log.i(TAG, "Redirecting to post details.");
+
+                    // Make sure that position is valid.
+                    if (position != RecyclerView.NO_POSITION) {
+                        Post post = allPosts.get(position);
+                        Log.i(TAG, "post: " + post.getCaption());
+
+                        // Create intent to redirect to details page.
+                        Intent intent = new Intent(getContext(), PostDetailsActivity.class);
+                        intent.putExtra("post", post);
+                        intent.putExtra("accessToken", accessToken);
+                        Log.i(TAG, "accessToken: " + accessToken);
+                        getContext().startActivity(intent);
+                    }
+
+                } else {
+                    // Handle right swipe to go to profile.
+                    int position = viewHolder.getAdapterPosition();
+
+                    Log.i(TAG, "Redirecting to profile page.");
+
+                    // Make sure that position is valid.
+                    if (position != RecyclerView.NO_POSITION) {
+                        Post post = allPosts.get(position);
+                        ParseUser user = post.getUser();
+                        Log.i(TAG, "post: " + post.getCaption());
+
+                        if (user.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                            // Set bottom clicked to profile.
+                            if (getActivity() instanceof MainActivity) {
+                                // get Main Activity
+                                MainActivity activity = (MainActivity) getActivity();
+
+                                // Switch bottom navigation to profile page.
+                                BottomNavigationView bottomNavigationView = activity.bottomNavigationView;
+                                bottomNavigationView.setSelectedItemId(R.id.action_profile);
+                            }
+                        } else {
+                            // Post belongs to other user.
+                            Intent i = new Intent(getContext(), FriendProfileActivity.class);
+                            Log.i(TAG, "Redirecting to profile of user with id: " + user.getString("username"));
+
+                            i.putExtra("accessToken", accessToken);
+                            i.putExtra("userId", user.getObjectId());
+                            i.putExtra("spotifyId", user.getString("username"));
+                            startActivity(i);
+                        }
+                    }
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHelper);
+        itemTouchHelper.attachToRecyclerView(rvFeed);
+
         // Configure refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -154,61 +226,6 @@ public class FeedFragment extends Fragment {
     }
 
     private void queryPosts() {
-        // Query for Followers object.
-        /*ParseQuery<ParseObject> followersQuery = ParseQuery.getQuery("Followers");
-        ParseUser currentUser = ParseUser.getCurrentUser();
-
-        if (currentUser == null) {
-            Log.i(TAG, "current user is null");
-        }
-
-        String followersObjectId = currentUser.getString("followersObjectId");
-        followersQuery.whereEqualTo("objectId", followersObjectId);
-        followersQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    ParseObject followers = objects.get(0);
-
-                    // Query for following users.
-                    ParseRelation<ParseUser> followingRel = followers.getRelation("following");
-                    ParseQuery<ParseUser> followingQ = followingRel.getQuery();
-                    followingQ.findInBackground(new FindCallback<ParseUser>() {
-                        @Override
-                        public void done(List<ParseUser> users, ParseException e) {
-                            if (e == null) {
-                                ParseQuery<Post> postQuery = ParseQuery.getQuery(Post.class);
-                                postQuery.include(Post.KEY_USER);
-                                postQuery.setLimit(20);
-                                postQuery.addDescendingOrder("createdAt");
-                                postQuery.whereContainedIn("user", objects);
-                                postQuery.findInBackground(new FindCallback<Post>() {
-                                    @Override
-                                    public void done(List<Post> posts, ParseException e) {
-                                        if (e != null) {
-                                            Log.e(TAG, "Issue with getting posts", e);
-                                            return;
-                                        }
-                                        for (Post post : posts) {
-                                            Log.i(TAG, "Post: " + post.getCaption() + ", username: " + post.getUser().getUsername());
-                                        }
-
-                                        // Save received posts.
-                                        allPosts.clear();
-                                        allPosts.addAll(posts);
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    Log.e(TAG, "Error at getting Followers object: " + e.getMessage());
-                }
-            }
-        });*/
-
-
         // Specify which class to query.
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 

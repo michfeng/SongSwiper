@@ -16,6 +16,7 @@ import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.models.Track;
 import com.codepath.michfeng.songswiper.runnables.RunnableLiked;
 import com.codepath.michfeng.songswiper.models.Card;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -228,12 +229,7 @@ public class LikedActivity extends AppCompatActivity {
                 });
 
                 thread.start();
-
-                // Redirect back to swiping.
-                Intent intent = new Intent(LikedActivity.this, MainActivity.class);
-                Log.i(TAG, "access token: " + getIntent().getStringExtra("accessToken"));
-                intent.putExtra("accessToken", getIntent().getStringExtra("accessToken"));
-                startActivity(intent);
+                finish();
             }
         });
     }

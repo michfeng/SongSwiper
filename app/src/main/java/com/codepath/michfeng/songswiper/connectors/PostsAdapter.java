@@ -3,7 +3,6 @@ package com.codepath.michfeng.songswiper.connectors;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -20,26 +19,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 import com.codepath.michfeng.songswiper.R;
 import com.codepath.michfeng.songswiper.activities.PostDetailsActivity;
 import com.codepath.michfeng.songswiper.models.Post;
-import com.codepath.michfeng.songswiper.models.User;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import spotify.api.spotify.SpotifyApi;
 import spotify.models.players.requests.ChangePlaybackStateRequestBody;
@@ -49,6 +43,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private Context context;
     private List<Post> posts;
     private String accessToken;
+    private final int SHOW_MENU = 1;
+    private final int HIDE_MENU = 2;
 
     private static final String TAG = "PostsAdapter";
 
@@ -59,11 +55,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         Log.i(TAG, "Constructor called");
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(posts.get(position).isShowMenu()){
+            return SHOW_MENU;
+        }else{
+            return HIDE_MENU;
+        }
+    }
+
     @NonNull
     @Override
     public PostsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
-        return new ViewHolder(view);
+        View view;
+
+            view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
+            return new ViewHolder(view);
+
     }
 
     @Override
@@ -93,6 +101,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView btnPlay;
         private TextView tvDate;
         private TextView tvLikes;
+        private int likes = 0;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -135,6 +144,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (image != null) {
                 Glide.with(context).load(image).into(itemAlbum);
             }
+
+            itemAlbum.setClipToOutline(true);
 
             ParseFile prof = post.getUser().getParseFile("profilePicture");
 
@@ -179,6 +190,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                             tvLikes.setText("" + objects.size() + " like");
                         else
                             tvLikes.setText("" + objects.size() + " likes");
+                        likes = objects.size();
                     } else if (e.equals(ParseException.OBJECT_NOT_FOUND)) {
                         tvLikes.setText("0 likes");
                     } else {
@@ -203,6 +215,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                     // Change the appearance of button to reflect (shade).
                     btnLike.setLiked(true);
+
+                    if (likes == 1)
+                        tvLikes.setText("" + (likes + 1) + " like");
+                    else
+                        tvLikes.setText("" + (likes + 1) + " likes");
+                    likes = likes + 1;
                 }
 
                 @Override
@@ -218,6 +236,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                     // Change the appearance of button to reflect action (unshade).
                     btnLike.setLiked(false);
+
+                    if (likes == 2)
+                        tvLikes.setText("" + (likes - 1) + " like");
+                    else
+                        tvLikes.setText("" + (likes - 1) + " likes");
+                    likes = likes - 1;
                 }
             });
 
@@ -254,22 +278,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             notifyDataSetChanged();
         }
 
-        public void onLike (View v) {
-            Post post = posts.get(getAdapterPosition());
-
-            // Record that specific user has liked the post.
-            ParseRelation<ParseUser> relation = post.getRelation("likes");
-            relation.add(ParseUser.getCurrentUser());
-            try {
-                post.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            // Change the appearance of button to reflect (shade).
-            btnLike.setLiked(true);
-        }
-
         // Handles types of actions on each post.
          class myGestureListener extends GestureDetector.SimpleOnGestureListener {
             @Override
@@ -288,6 +296,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
                 // Change the appearance of button to reflect (shade).
                 btnLike.setLiked(true);
+
+                if (likes == 1)
+                    tvLikes.setText("" + (likes) + " like");
+                else
+                    tvLikes.setText("" + (likes) + " likes");
+
+                likes++;
+
                 return super.onDoubleTapEvent(e);
             }
 
