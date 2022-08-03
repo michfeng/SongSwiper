@@ -11,12 +11,30 @@
 
 | Property | Type     | Description |
 | -------- | -------- | -------- |
-| objectId | String   | id for post (default field) |
 | author | Pointer to User | post author |
-| type | String  | type of post (for "liked" song vs. playlist) |
-| createdAt | DateTime | date when post created (default field) |
-| image | File | album or playlist art (depending on type) |
-| artistImage | File | artist image (only for liked song type) | 
+| caption | String  | user-made caption |
+| artpath | String | link to album art |
+| likes | Relation of Users | maps relation of users who liked the post |
+| uri | String | Spotify-specific track uri | 
+
+#### Followers
+
+
+| Property | Type     | Description |
+| -------- | -------- | -------- |
+| user | Pointer to User | user whose relationships are being tracked |
+| followers | Relation of Users  | others who follow user |
+| following | Relation of Users | friends that user follows |
+
+#### LikedObjects
+
+
+| Property | Type     | Description |
+| -------- | -------- | -------- |
+| user | Pointer to User | user whose likes are being tracked |
+| likedTracks | Array  | liked tracks |
+| likedGenres | Array | liked genres |
+| likedArtists | Array | liked artists |
 
 ### Networking
 #### List of network requests by screen
